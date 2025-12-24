@@ -1,0 +1,26 @@
+{
+    "sourceFile": "frontend/lib/core/widgets/user_avatar.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1766327024527,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327295657,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,86 @@\n+import 'package:cached_network_image/cached_network_image.dart';\r\n+import 'package:flutter/material.dart';\r\n+import '../theme/app_colors.dart';\r\n+import '../utils/helpers.dart';\r\n \r\n+class UserAvatar extends StatelessWidget {\r\n+  final String? imageUrl;\r\n+  final String name;\r\n+  final double size;\r\n+  final bool showOnlineIndicator;\r\n+  final bool isOnline;\r\n+  final VoidCallback? onTap;\r\n+\r\n+  const UserAvatar({\r\n+    super.key,\r\n+    this.imageUrl,\r\n+    required this.name,\r\n+    this.size = 48,\r\n+    this.showOnlineIndicator = false,\r\n+    this.isOnline = false,\r\n+    this.onTap,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return GestureDetector(\r\n+      onTap: onTap,\r\n+      child: Stack(\r\n+        children: [\r\n+          Container(\r\n+            width: size,\r\n+            height: size,\r\n+            decoration: BoxDecoration(\r\n+              shape: BoxShape.circle,\r\n+              color: AppColors.primary.withOpacity(0.1),\r\n+              border: Border.all(\r\n+                color: AppColors.primary.withOpacity(0.2),\r\n+                width: 2,\r\n+              ),\r\n+            ),\r\n+            child: ClipOval(\r\n+              child: imageUrl != null && imageUrl!.isNotEmpty\r\n+                  ? CachedNetworkImage(\r\n+                      imageUrl: imageUrl!,\r\n+                      fit: BoxFit.cover,\r\n+                      placeholder: (context, url) => _buildInitials(),\r\n+                      errorWidget: (context, url, error) => _buildInitials(),\r\n+                    )\r\n+                  : _buildInitials(),\r\n+            ),\r\n+          ),\r\n+          if (showOnlineIndicator)\r\n+            Positioned(\r\n+              right: 0,\r\n+              bottom: 0,\r\n+              child: Container(\r\n+                width: size * 0.3,\r\n+                height: size * 0.3,\r\n+                decoration: BoxDecoration(\r\n+                  color: isOnline ? AppColors.success : AppColors.grey400,\r\n+                  shape: BoxShape.circle,\r\n+                  border: Border.all(\r\n+                    color: Colors.white,\r\n+                    width: 2,\r\n+                  ),\r\n+                ),\r\n+              ),\r\n+            ),\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+\r\n+  Widget _buildInitials() {\r\n+    return Center(\r\n+      child: Text(\r\n+        Helpers.getInitials(name),\r\n+        style: TextStyle(\r\n+          fontSize: size * 0.35,\r\n+          fontWeight: FontWeight.bold,\r\n+          color: AppColors.primary,\r\n+        ),\r\n+      ),\r\n+    );\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766346679847,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -31,11 +31,11 @@\n             width: size,\r\n             height: size,\r\n             decoration: BoxDecoration(\r\n               shape: BoxShape.circle,\r\n-              color: AppColors.primary.withOpacity(0.1),\r\n+              color: AppColors.primary.withAlpha(26),\r\n               border: Border.all(\r\n-                color: AppColors.primary.withOpacity(0.2),\r\n+                color: AppColors.primary.withAlpha(51),\r\n                 width: 2,\r\n               ),\r\n             ),\r\n             child: ClipOval(\r\n@@ -82,5 +82,5 @@\n         ),\r\n       ),\r\n     );\r\n   }\r\n-}\n\\ No newline at end of file\n+}\r\n"
+                }
+            ],
+            "date": 1766327024527,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

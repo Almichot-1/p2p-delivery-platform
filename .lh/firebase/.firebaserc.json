@@ -1,0 +1,18 @@
+{
+    "sourceFile": "firebase/.firebaserc",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1766392298029,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1766392298029,
+            "name": "Commit-0",
+            "content": "{\r\n  \"projects\": {\r\n    \"default\": \"mbapp-dev-2025-noor\",\r\n    \"production\": \"mbapp-dev-2025-noor\"\r\n  }\r\n}"
+        }
+    ]
+}

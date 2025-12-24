@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/profile/bloc/profile_event.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327036639,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766330127449,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,59 @@\n+import 'dart:io';\r\n+import 'package:equatable/equatable.dart';\r\n+import '../../auth/data/models/user_model.dart';\r\n \r\n+abstract class ProfileEvent extends Equatable {\r\n+  const ProfileEvent();\r\n+\r\n+  @override\r\n+  List<Object?> get props => [];\r\n+}\r\n+\r\n+class ProfileLoadRequested extends ProfileEvent {\r\n+  final String userId;\r\n+\r\n+  const ProfileLoadRequested(this.userId);\r\n+\r\n+  @override\r\n+  List<Object> get props => [userId];\r\n+}\r\n+\r\n+class ProfileUpdateRequested extends ProfileEvent {\r\n+  final UserModel user;\r\n+\r\n+  const ProfileUpdateRequested(this.user);\r\n+\r\n+  @override\r\n+  List<Object> get props => [user];\r\n+}\r\n+\r\n+class ProfilePhotoUpdateRequested extends ProfileEvent {\r\n+  final File photo;\r\n+\r\n+  const ProfilePhotoUpdateRequested(this.photo);\r\n+\r\n+  @override\r\n+  List<Object> get props => [photo];\r\n+}\r\n+\r\n+class ProfileVerificationRequested extends ProfileEvent {\r\n+  final File document;\r\n+  final String documentType;\r\n+\r\n+  const ProfileVerificationRequested({\r\n+    required this.document,\r\n+    required this.documentType,\r\n+  });\r\n+\r\n+  @override\r\n+  List<Object> get props => [document, documentType];\r\n+}\r\n+\r\n+class ProfileRoleUpdateRequested extends ProfileEvent {\r\n+  final UserRole role;\r\n+\r\n+  const ProfileRoleUpdateRequested(this.role);\r\n+\r\n+  @override\r\n+  List<Object> get props => [role];\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327036639,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

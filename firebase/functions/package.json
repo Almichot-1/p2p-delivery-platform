@@ -1,0 +1,32 @@
+{
+  "name": "diaspora-delivery-functions",
+  "version": "1.0.0",
+  "description": "Cloud Functions for Diaspora Peer Delivery App",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "serve": "firebase emulators:start --only functions",
+    "shell": "firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log",
+    "test": "jest"
+  },
+  "engines": {
+    "node": "18"
+  },
+  "dependencies": {
+    "date-fns": "^2.30.0",
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.2",
+    "geofire-common": "^6.0.0",
+    "validator": "^13.11.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.54.0",
+    "eslint-config-google": "^0.14.0",
+    "firebase-functions-test": "^3.1.0",
+    "jest": "^29.7.0"
+  },
+  "private": true
+}

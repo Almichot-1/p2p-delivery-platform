@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/core/utils/validators.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327024440,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327224356,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,109 @@\n+class Validators {\r\n+  Validators._();\r\n \r\n+  static String? email(String? value) {\r\n+    if (value == null || value.isEmpty) {\r\n+      return 'Email is required';\r\n+    }\r\n+    final emailRegex = RegExp(\r\n+      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',\r\n+    );\r\n+    if (!emailRegex.hasMatch(value)) {\r\n+      return 'Please enter a valid email';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? password(String? value) {\r\n+    if (value == null || value.isEmpty) {\r\n+      return 'Password is required';\r\n+    }\r\n+    if (value.length < 8) {\r\n+      return 'Password must be at least 8 characters';\r\n+    }\r\n+    if (!value.contains(RegExp(r'[A-Z]'))) {\r\n+      return 'Password must contain at least one uppercase letter';\r\n+    }\r\n+    if (!value.contains(RegExp(r'[0-9]'))) {\r\n+      return 'Password must contain at least one number';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? confirmPassword(String? value, String password) {\r\n+    if (value == null || value.isEmpty) {\r\n+      return 'Please confirm your password';\r\n+    }\r\n+    if (value != password) {\r\n+      return 'Passwords do not match';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? phone(String? value) {\r\n+    if (value == null || value.isEmpty) {\r\n+      return 'Phone number is required';\r\n+    }\r\n+    final phoneRegex = RegExp(r'^\\+?[1-9]\\d{9,14}$');\r\n+    if (!phoneRegex.hasMatch(value.replaceAll(RegExp(r'[\\s\\-\\(\\)]'), ''))) {\r\n+      return 'Please enter a valid phone number';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? required(String? value, [String fieldName = 'This field']) {\r\n+    if (value == null || value.trim().isEmpty) {\r\n+      return '$fieldName is required';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? minLength(String? value, int minLength, [String fieldName = 'This field']) {\r\n+    if (value == null || value.length < minLength) {\r\n+      return '$fieldName must be at least $minLength characters';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? maxLength(String? value, int maxLength, [String fieldName = 'This field']) {\r\n+    if (value != null && value.length > maxLength) {\r\n+      return '$fieldName must not exceed $maxLength characters';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? positiveNumber(String? value, [String fieldName = 'Value']) {\r\n+    if (value == null || value.isEmpty) {\r\n+      return '$fieldName is required';\r\n+    }\r\n+    final number = double.tryParse(value);\r\n+    if (number == null || number <= 0) {\r\n+      return '$fieldName must be a positive number';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? weight(String? value) {\r\n+    if (value == null || value.isEmpty) {\r\n+      return 'Weight is required';\r\n+    }\r\n+    final weight = double.tryParse(value);\r\n+    if (weight == null || weight <= 0) {\r\n+      return 'Please enter a valid weight';\r\n+    }\r\n+    if (weight > 50) {\r\n+      return 'Maximum weight allowed is 50 kg';\r\n+    }\r\n+    return null;\r\n+  }\r\n+\r\n+  static String? dateNotInPast(DateTime? value) {\r\n+    if (value == null) {\r\n+      return 'Date is required';\r\n+    }\r\n+    if (value.isBefore(DateTime.now())) {\r\n+      return 'Date cannot be in the past';\r\n+    }\r\n+    return null;\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327024440,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

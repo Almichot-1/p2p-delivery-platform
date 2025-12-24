@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/chat/data/models/message_model.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327121756,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766329017741,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,88 @@\n+import 'package:cloud_firestore/cloud_firestore.dart';\r\n+import 'package:equatable/equatable.dart';\r\n \r\n+enum MessageType { text, image, system }\r\n+\r\n+class MessageModel extends Equatable {\r\n+  final String id;\r\n+  final String matchId;\r\n+  final String senderId;\r\n+  final String senderName;\r\n+  final String content;\r\n+  final MessageType type;\r\n+  final String? imageUrl;\r\n+  final bool isRead;\r\n+  final DateTime createdAt;\r\n+\r\n+  const MessageModel({\r\n+    required this.id,\r\n+    required this.matchId,\r\n+    required this.senderId,\r\n+    required this.senderName,\r\n+    required this.content,\r\n+    this.type = MessageType.text,\r\n+    this.imageUrl,\r\n+    this.isRead = false,\r\n+    required this.createdAt,\r\n+  });\r\n+\r\n+  factory MessageModel.fromFirestore(DocumentSnapshot doc) {\r\n+    final data = doc.data() as Map<String, dynamic>;\r\n+    return MessageModel(\r\n+      id: doc.id,\r\n+      matchId: data['matchId'] ?? '',\r\n+      senderId: data['senderId'] ?? '',\r\n+      senderName: data['senderName'] ?? '',\r\n+      content: data['content'] ?? '',\r\n+      type: MessageType.values.firstWhere(\r\n+        (e) => e.name == data['type'],\r\n+        orElse: () => MessageType.text,\r\n+      ),\r\n+      imageUrl: data['imageUrl'],\r\n+      isRead: data['isRead'] ?? false,\r\n+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),\r\n+    );\r\n+  }\r\n+\r\n+  Map<String, dynamic> toFirestore() {\r\n+    return {\r\n+      'matchId': matchId,\r\n+      'senderId': senderId,\r\n+      'senderName': senderName,\r\n+      'content': content,\r\n+      'type': type.name,\r\n+      'imageUrl': imageUrl,\r\n+      'isRead': isRead,\r\n+      'createdAt': Timestamp.fromDate(createdAt),\r\n+    };\r\n+  }\r\n+\r\n+  MessageModel copyWith({\r\n+    String? id,\r\n+    String? matchId,\r\n+    String? senderId,\r\n+    String? senderName,\r\n+    String? content,\r\n+    MessageType? type,\r\n+    String? imageUrl,\r\n+    bool? isRead,\r\n+    DateTime? createdAt,\r\n+  }) {\r\n+    return MessageModel(\r\n+      id: id ?? this.id,\r\n+      matchId: matchId ?? this.matchId,\r\n+      senderId: senderId ?? this.senderId,\r\n+      senderName: senderName ?? this.senderName,\r\n+      content: content ?? this.content,\r\n+      type: type ?? this.type,\r\n+      imageUrl: imageUrl ?? this.imageUrl,\r\n+      isRead: isRead ?? this.isRead,\r\n+      createdAt: createdAt ?? this.createdAt,\r\n+    );\r\n+  }\r\n+\r\n+  bool isMine(String currentUserId) => senderId == currentUserId;\r\n+\r\n+  @override\r\n+  List<Object?> get props => [id, matchId, senderId, content, createdAt];\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327121756,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

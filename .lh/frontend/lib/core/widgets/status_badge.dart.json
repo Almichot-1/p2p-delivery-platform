@@ -1,0 +1,26 @@
+{
+    "sourceFile": "frontend/lib/core/widgets/status_badge.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1766327024546,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327311425,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,72 @@\n+import 'package:flutter/material.dart';\r\n+import '../theme/app_colors.dart';\r\n+import '../theme/app_text_styles.dart';\r\n+import '../utils/helpers.dart';\r\n \r\n+class StatusBadge extends StatelessWidget {\r\n+  final String status;\r\n+  final bool showIcon;\r\n+  final double? fontSize;\r\n+\r\n+  const StatusBadge({\r\n+    super.key,\r\n+    required this.status,\r\n+    this.showIcon = true,\r\n+    this.fontSize,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    final color = Helpers.getStatusColor(status);\r\n+\r\n+    return Container(\r\n+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),\r\n+      decoration: BoxDecoration(\r\n+        color: color.withOpacity(0.1),\r\n+        borderRadius: BorderRadius.circular(20),\r\n+        border: Border.all(\r\n+          color: color.withOpacity(0.3),\r\n+          width: 1,\r\n+        ),\r\n+      ),\r\n+      child: Row(\r\n+        mainAxisSize: MainAxisSize.min,\r\n+        children: [\r\n+          if (showIcon) ...[\r\n+            Icon(\r\n+              _getStatusIcon(status),\r\n+              size: fontSize ?? 14,\r\n+              color: color,\r\n+            ),\r\n+            const SizedBox(width: 6),\r\n+          ],\r\n+          Text(\r\n+            status.toUpperCase(),\r\n+            style: AppTextStyles.labelSmall.copyWith(\r\n+              color: color,\r\n+              fontWeight: FontWeight.w600,\r\n+              fontSize: fontSize,\r\n+            ),\r\n+          ),\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+\r\n+  IconData _getStatusIcon(String status) {\r\n+    switch (status.toLowerCase()) {\r\n+      case 'pending':\r\n+        return Icons.schedule;\r\n+      case 'active':\r\n+        return Icons.flight_takeoff;\r\n+      case 'confirmed':\r\n+        return Icons.check_circle;\r\n+      case 'completed':\r\n+        return Icons.done_all;\r\n+      case 'cancelled':\r\n+        return Icons.cancel;\r\n+      default:\r\n+        return Icons.info;\r\n+    }\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766346679850,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,71 @@\n+import 'package:flutter/material.dart';\r\n+import '../theme/app_text_styles.dart';\r\n+import '../utils/helpers.dart';\r\n+\r\n+class StatusBadge extends StatelessWidget {\r\n+  final String status;\r\n+  final bool showIcon;\r\n+  final double? fontSize;\r\n+\r\n+  const StatusBadge({\r\n+    super.key,\r\n+    required this.status,\r\n+    this.showIcon = true,\r\n+    this.fontSize,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    final color = Helpers.getStatusColor(status);\r\n+\r\n+    return Container(\r\n+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),\r\n+      decoration: BoxDecoration(\r\n+        color: color.withAlpha(26),\r\n+        borderRadius: BorderRadius.circular(20),\r\n+        border: Border.all(\r\n+          color: color.withAlpha(77),\r\n+          width: 1,\r\n+        ),\r\n+      ),\r\n+      child: Row(\r\n+        mainAxisSize: MainAxisSize.min,\r\n+        children: [\r\n+          if (showIcon) ...[\r\n+            Icon(\r\n+              _getStatusIcon(status),\r\n+              size: fontSize ?? 14,\r\n+              color: color,\r\n+            ),\r\n+            const SizedBox(width: 6),\r\n+          ],\r\n+          Text(\r\n+            status.toUpperCase(),\r\n+            style: AppTextStyles.labelSmall.copyWith(\r\n+              color: color,\r\n+              fontWeight: FontWeight.w600,\r\n+              fontSize: fontSize,\r\n+            ),\r\n+          ),\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+\r\n+  IconData _getStatusIcon(String status) {\r\n+    switch (status.toLowerCase()) {\r\n+      case 'pending':\r\n+        return Icons.schedule;\r\n+      case 'active':\r\n+        return Icons.flight_takeoff;\r\n+      case 'confirmed':\r\n+        return Icons.check_circle;\r\n+      case 'completed':\r\n+        return Icons.done_all;\r\n+      case 'cancelled':\r\n+        return Icons.cancel;\r\n+      default:\r\n+        return Icons.info;\r\n+    }\r\n+  }\r\n+}\r\n"
+                }
+            ],
+            "date": 1766327024546,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

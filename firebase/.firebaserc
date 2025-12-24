@@ -1,0 +1,6 @@
+{
+  "projects": {
+    "default": "mbapp-dev-2025-noor",
+    "production": "mbapp-dev-2025-noor"
+  }
+}

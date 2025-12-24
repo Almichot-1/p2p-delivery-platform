@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/matches/bloc/match_state.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327121723,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766328923702,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,49 @@\n+import 'package:equatable/equatable.dart';\r\n+import '../data/models/match_model.dart';\r\n \r\n+abstract class MatchState extends Equatable {\r\n+  const MatchState();\r\n+\r\n+  @override\r\n+  List<Object?> get props => [];\r\n+}\r\n+\r\n+class MatchInitial extends MatchState {}\r\n+\r\n+class MatchLoading extends MatchState {}\r\n+\r\n+class MatchesLoaded extends MatchState {\r\n+  final List<MatchModel> matches;\r\n+\r\n+  const MatchesLoaded(this.matches);\r\n+\r\n+  @override\r\n+  List<Object> get props => [matches];\r\n+}\r\n+\r\n+class MatchDetailsLoaded extends MatchState {\r\n+  final MatchModel match;\r\n+\r\n+  const MatchDetailsLoaded(this.match);\r\n+\r\n+  @override\r\n+  List<Object> get props => [match];\r\n+}\r\n+\r\n+class MatchActionSuccess extends MatchState {\r\n+  final String message;\r\n+\r\n+  const MatchActionSuccess(this.message);\r\n+\r\n+  @override\r\n+  List<Object> get props => [message];\r\n+}\r\n+\r\n+class MatchError extends MatchState {\r\n+  final String message;\r\n+\r\n+  const MatchError(this.message);\r\n+\r\n+  @override\r\n+  List<Object> get props => [message];\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327121723,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

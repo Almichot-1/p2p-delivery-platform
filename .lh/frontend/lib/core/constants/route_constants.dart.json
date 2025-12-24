@@ -1,0 +1,26 @@
+{
+    "sourceFile": "frontend/lib/core/constants/route_constants.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1766327024441,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327154024,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,45 @@\n+class RouteConstants {\r\n+  RouteConstants._();\r\n \r\n+  // Auth Routes\r\n+  static const String splash = '/';\r\n+  static const String onboarding = '/onboarding';\r\n+  static const String login = '/login';\r\n+  static const String register = '/register';\r\n+  static const String forgotPassword = '/forgot-password';\r\n+  static const String verifyPhone = '/verify-phone';\r\n+\r\n+  // Main Routes\r\n+  static const String home = '/home';\r\n+  static const String profile = '/profile';\r\n+  static const String editProfile = '/profile/edit';\r\n+  static const String settings = '/settings';\r\n+  static const String verification = '/verification';\r\n+\r\n+  // Trip Routes\r\n+  static const String trips = '/trips';\r\n+  static const String tripDetails = '/trips/:id';\r\n+  static const String createTrip = '/trips/create';\r\n+  static const String myTrips = '/my-trips';\r\n+\r\n+  // Request Routes\r\n+  static const String requests = '/requests';\r\n+  static const String requestDetails = '/requests/:id';\r\n+  static const String createRequest = '/requests/create';\r\n+  static const String myRequests = '/my-requests';\r\n+\r\n+  // Match Routes\r\n+  static const String matches = '/matches';\r\n+  static const String matchDetails = '/matches/:id';\r\n+\r\n+  // Chat Routes\r\n+  static const String conversations = '/conversations';\r\n+  static const String chat = '/chat/:matchId';\r\n+\r\n+  // Review Routes\r\n+  static const String reviews = '/reviews/:userId';\r\n+  static const String createReview = '/reviews/create/:matchId';\r\n+\r\n+  // Notification Routes\r\n+  static const String notifications = '/notifications';\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766335450717,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -33,8 +33,9 @@\n   static const String matchDetails = '/matches/:id';\r\n \r\n   // Chat Routes\r\n   static const String conversations = '/conversations';\r\n+  static const String chats = '/chats';\r\n   static const String chat = '/chat/:matchId';\r\n \r\n   // Review Routes\r\n   static const String reviews = '/reviews/:userId';\r\n"
+                }
+            ],
+            "date": 1766327024441,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

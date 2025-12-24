@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/auth/presentation/widgets/social_login_buttons.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327036640,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766328130959,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,73 @@\n+import 'package:flutter/material.dart';\r\n+import '../../../../core/theme/app_colors.dart';\r\n+import '../../../../core/theme/app_text_styles.dart';\r\n \r\n+class SocialLoginButtons extends StatelessWidget {\r\n+  const SocialLoginButtons({super.key});\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Row(\r\n+      children: [\r\n+        Expanded(\r\n+          child: _SocialButton(\r\n+            icon: Icons.g_mobiledata,\r\n+            label: 'Google',\r\n+            onPressed: () {\r\n+              // TODO: Implement Google Sign In\r\n+            },\r\n+          ),\r\n+        ),\r\n+        const SizedBox(width: 16),\r\n+        Expanded(\r\n+          child: _SocialButton(\r\n+            icon: Icons.phone,\r\n+            label: 'Phone',\r\n+            onPressed: () {\r\n+              // TODO: Navigate to phone auth\r\n+            },\r\n+          ),\r\n+        ),\r\n+      ],\r\n+    );\r\n+  }\r\n+}\r\n+\r\n+class _SocialButton extends StatelessWidget {\r\n+  final IconData icon;\r\n+  final String label;\r\n+  final VoidCallback onPressed;\r\n+\r\n+  const _SocialButton({\r\n+    required this.icon,\r\n+    required this.label,\r\n+    required this.onPressed,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return OutlinedButton(\r\n+      onPressed: onPressed,\r\n+      style: OutlinedButton.styleFrom(\r\n+        padding: const EdgeInsets.symmetric(vertical: 14),\r\n+        side: BorderSide(color: AppColors.grey300),\r\n+        shape: RoundedRectangleBorder(\r\n+          borderRadius: BorderRadius.circular(12),\r\n+        ),\r\n+      ),\r\n+      child: Row(\r\n+        mainAxisAlignment: MainAxisAlignment.center,\r\n+        children: [\r\n+          Icon(icon, size: 24, color: AppColors.grey700),\r\n+          const SizedBox(width: 8),\r\n+          Text(\r\n+            label,\r\n+            style: AppTextStyles.button.copyWith(\r\n+              color: AppColors.grey700,\r\n+            ),\r\n+          ),\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327036640,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

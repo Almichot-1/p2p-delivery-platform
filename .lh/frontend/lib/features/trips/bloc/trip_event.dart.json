@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/trips/bloc/trip_event.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327036641,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766328181346,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,72 @@\n+import 'package:equatable/equatable.dart';\r\n+import '../data/models/trip_model.dart';\r\n \r\n+abstract class TripEvent extends Equatable {\r\n+  const TripEvent();\r\n+\r\n+  @override\r\n+  List<Object?> get props => [];\r\n+}\r\n+\r\n+class TripsLoadRequested extends TripEvent {\r\n+  final String? destinationCity;\r\n+  final DateTime? afterDate;\r\n+\r\n+  const TripsLoadRequested({this.destinationCity, this.afterDate});\r\n+\r\n+  @override\r\n+  List<Object?> get props => [destinationCity, afterDate];\r\n+}\r\n+\r\n+class MyTripsLoadRequested extends TripEvent {}\r\n+\r\n+class TripDetailsRequested extends TripEvent {\r\n+  final String tripId;\r\n+\r\n+  const TripDetailsRequested(this.tripId);\r\n+\r\n+  @override\r\n+  List<Object> get props => [tripId];\r\n+}\r\n+\r\n+class TripCreateRequested extends TripEvent {\r\n+  final TripModel trip;\r\n+\r\n+  const TripCreateRequested(this.trip);\r\n+\r\n+  @override\r\n+  List<Object> get props => [trip];\r\n+}\r\n+\r\n+class TripUpdateRequested extends TripEvent {\r\n+  final TripModel trip;\r\n+\r\n+  const TripUpdateRequested(this.trip);\r\n+\r\n+  @override\r\n+  List<Object> get props => [trip];\r\n+}\r\n+\r\n+class TripCancelRequested extends TripEvent {\r\n+  final String tripId;\r\n+\r\n+  const TripCancelRequested(this.tripId);\r\n+\r\n+  @override\r\n+  List<Object> get props => [tripId];\r\n+}\r\n+\r\n+class TripSearchRequested extends TripEvent {\r\n+  final String destinationCity;\r\n+  final DateTime? departureDate;\r\n+  final double? minCapacity;\r\n+\r\n+  const TripSearchRequested({\r\n+    required this.destinationCity,\r\n+    this.departureDate,\r\n+    this.minCapacity,\r\n+  });\r\n+\r\n+  @override\r\n+  List<Object?> get props => [destinationCity, departureDate, minCapacity];\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327036641,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

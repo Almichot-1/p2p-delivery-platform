@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "961123527612",
+    "project_id": "mbapp-dev-2025-noor",
+    "storage_bucket": "mbapp-dev-2025-noor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:961123527612:android:76041ad1c64e1aad3e99b9",
+        "android_client_info": {
+          "package_name": "com.example.frontend"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "961123527612-8mh1b4jb7ist6m3spgftdanh9e00bq2h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.frontend",
+            "certificate_hash": "e1e29cae39822efdf59097093da83b463bda903b"
+          }
+        },
+        {
+          "client_id": "961123527612-u1hg7k5rds715h3s9fpf6ugmsnhnggg6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaOv9R-4Til8A4HSx8MdTvCM7j6XNg0d8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "961123527612-u1hg7k5rds715h3s9fpf6ugmsnhnggg6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

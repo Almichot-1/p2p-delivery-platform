@@ -1,0 +1,18 @@
+{
+    "sourceFile": "frontend/android/app/src/debug/AndroidManifest.xml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1766593442780,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1766593442780,
+            "name": "Commit-0",
+            "content": "<manifest xmlns:android=\"http://schemas.android.com/apk/res/android\">\r\n    <!-- The INTERNET permission is required for development. Specifically,\r\n         the Flutter tool needs it to communicate with the running application\r\n         to allow setting breakpoints, to provide hot reload, etc.\r\n    -->\r\n    <uses-permission android:name=\"android.permission.INTERNET\"/>\r\n\r\n    <!-- Allow HTTP (cleartext) traffic in debug so Firebase emulators work. -->\r\n    <application android:usesCleartextTraffic=\"true\" />\r\n</manifest>\r\n"
+        }
+    ]
+}

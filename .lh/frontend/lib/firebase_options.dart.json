@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/firebase_options.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327024433,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766334824591,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,81 @@\n+// File: lib/firebase_options.dart\r\n+import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;\r\n+import 'package:flutter/foundation.dart'\r\n+    show defaultTargetPlatform, kIsWeb, TargetPlatform;\r\n \r\n+/// Default [FirebaseOptions] for use with your Firebase apps.\r\n+///\r\n+/// Example:\r\n+/// ```dart\r\n+/// import 'firebase_options.dart';\r\n+/// // ...\r\n+/// await Firebase.initializeApp(\r\n+///   options: DefaultFirebaseOptions.currentPlatform,\r\n+/// );\r\n+/// ```\r\n+class DefaultFirebaseOptions {\r\n+  static FirebaseOptions get currentPlatform {\r\n+    if (kIsWeb) {\r\n+      return web;\r\n+    }\r\n+    switch (defaultTargetPlatform) {\r\n+      case TargetPlatform.android:\r\n+        return android;\r\n+      case TargetPlatform.iOS:\r\n+        return ios;\r\n+      case TargetPlatform.macOS:\r\n+        return macos;\r\n+      case TargetPlatform.windows:\r\n+        throw UnsupportedError(\r\n+          'DefaultFirebaseOptions have not been configured for windows - '\r\n+          'you can reconfigure this by running the FlutterFire CLI again.',\r\n+        );\r\n+      case TargetPlatform.linux:\r\n+        throw UnsupportedError(\r\n+          'DefaultFirebaseOptions have not been configured for linux - '\r\n+          'you can reconfigure this by running the FlutterFire CLI again.',\r\n+        );\r\n+      default:\r\n+        throw UnsupportedError(\r\n+          'DefaultFirebaseOptions are not supported for this platform.',\r\n+        );\r\n+    }\r\n+  }\r\n+\r\n+  static const FirebaseOptions web = FirebaseOptions(\r\n+    apiKey: 'dummy-api-key',\r\n+    appId: 'dummy-app-id',\r\n+    messagingSenderId: 'dummy-sender-id',\r\n+    projectId: 'diaspora-delivery',\r\n+    authDomain: 'diaspora-delivery.firebaseapp.com',\r\n+    storageBucket: 'diaspora-delivery.appspot.com',\r\n+  );\r\n+\r\n+  static const FirebaseOptions android = FirebaseOptions(\r\n+    apiKey: 'dummy-api-key',\r\n+    appId: 'dummy-app-id',\r\n+    messagingSenderId: 'dummy-sender-id',\r\n+    projectId: 'diaspora-delivery',\r\n+    storageBucket: 'diaspora-delivery.appspot.com',\r\n+  );\r\n+\r\n+  static const FirebaseOptions ios = FirebaseOptions(\r\n+    apiKey: 'dummy-api-key',\r\n+    appId: 'dummy-app-id',\r\n+    messagingSenderId: 'dummy-sender-id',\r\n+    projectId: 'diaspora-delivery',\r\n+    storageBucket: 'diaspora-delivery.appspot.com',\r\n+    iosClientId: 'dummy-ios-client-id',\r\n+    iosBundleId: 'com.example.diasporaDelivery',\r\n+  );\r\n+\r\n+  static const FirebaseOptions macos = FirebaseOptions(\r\n+    apiKey: 'dummy-api-key',\r\n+    appId: 'dummy-app-id',\r\n+    messagingSenderId: 'dummy-sender-id',\r\n+    projectId: 'diaspora-delivery',\r\n+    storageBucket: 'diaspora-delivery.appspot.com',\r\n+    iosClientId: 'dummy-ios-client-id',\r\n+    iosBundleId: 'com.example.diasporaDelivery',\r\n+  );\r\n+}\r\n"
+                }
+            ],
+            "date": 1766327024433,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

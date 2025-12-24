@@ -1,0 +1,30 @@
+{
+    "sourceFile": "frontend/lib/app.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 3,
+            "patches": [
+                {
+                    "date": 1766327024431,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327116973,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,44 @@\n+import 'package:flutter/material.dart';\r\n+import 'package:flutter_bloc/flutter_bloc.dart';\r\n+import 'package:flutter_localizations/flutter_localizations.dart';\r\n \r\n+import 'config/routes.dart';\r\n+import 'config/dependency_injection.dart';\r\n+import 'core/theme/app_theme.dart';\r\n+import 'features/auth/bloc/auth_bloc.dart';\r\n+import 'features/notifications/bloc/notification_bloc.dart';\r\n+\r\n+class DiasporaDeliveryApp extends StatelessWidget {\r\n+  const DiasporaDeliveryApp({super.key});\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return MultiBlocProvider(\r\n+      providers: [\r\n+        BlocProvider(\r\n+          create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),\r\n+        ),\r\n+        BlocProvider(\r\n+          create: (_) => getIt<NotificationBloc>(),\r\n+        ),\r\n+      ],\r\n+      child: MaterialApp.router(\r\n+        title: 'Diaspora Delivery',\r\n+        debugShowCheckedModeBanner: false,\r\n+        theme: AppTheme.lightTheme,\r\n+        darkTheme: AppTheme.darkTheme,\r\n+        themeMode: ThemeMode.system,\r\n+        routerConfig: AppRouter.router,\r\n+        localizationsDelegates: const [\r\n+          GlobalMaterialLocalizations.delegate,\r\n+          GlobalWidgetsLocalizations.delegate,\r\n+          GlobalCupertinoLocalizations.delegate,\r\n+        ],\r\n+        supportedLocales: const [\r\n+          Locale('en', 'US'),\r\n+          Locale('am', 'ET'), // Amharic\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766335670273,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -5,8 +5,9 @@\n import 'config/routes.dart';\r\n import 'config/dependency_injection.dart';\r\n import 'core/theme/app_theme.dart';\r\n import 'features/auth/bloc/auth_bloc.dart';\r\n+import 'features/auth/bloc/auth_event.dart';\r\n import 'features/notifications/bloc/notification_bloc.dart';\r\n \r\n class DiasporaDeliveryApp extends StatelessWidget {\r\n   const DiasporaDeliveryApp({super.key});\r\n"
+                },
+                {
+                    "date": 1766347899496,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -0,0 +1,70 @@\n+import 'package:flutter/material.dart';\r\n+import 'package:flutter_bloc/flutter_bloc.dart';\r\n+import 'package:flutter_localizations/flutter_localizations.dart';\r\n+\r\n+import 'config/routes.dart';\r\n+import 'config/dependency_injection.dart';\r\n+import 'core/theme/app_theme.dart';\r\n+import 'features/auth/bloc/auth_bloc.dart';\r\n+import 'features/auth/bloc/auth_event.dart';\r\n+import 'features/notifications/bloc/notification_bloc.dart';\r\n+\r\n+class DiasporaDeliveryApp extends StatelessWidget {\r\n+  final bool firebaseInitialized;\r\n+\r\n+  const DiasporaDeliveryApp({\r\n+    super.key,\r\n+    required this.firebaseInitialized,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    if (!firebaseInitialized) {\r\n+      return const MaterialApp(\r\n+        debugShowCheckedModeBanner: false,\r\n+        home: Scaffold(\r\n+          body: Center(\r\n+            child: Padding(\r\n+              padding: EdgeInsets.all(24),\r\n+              child: Text(\r\n+                'Firebase is not configured for this app build.\\n\\n'\r\n+                'To fix this for Android, add google-services.json to:\\n'\r\n+                'android/app/google-services.json\\n\\n'\r\n+                'Then rebuild the app.',\r\n+                textAlign: TextAlign.center,\r\n+              ),\r\n+            ),\r\n+          ),\r\n+        ),\r\n+      );\r\n+    }\r\n+\r\n+    return MultiBlocProvider(\r\n+      providers: [\r\n+        BlocProvider(\r\n+          create: (_) => getIt<AuthBloc>()..add(AuthCheckRequested()),\r\n+        ),\r\n+        BlocProvider(\r\n+          create: (_) => getIt<NotificationBloc>(),\r\n+        ),\r\n+      ],\r\n+      child: MaterialApp.router(\r\n+        title: 'Diaspora Delivery',\r\n+        debugShowCheckedModeBanner: false,\r\n+        theme: AppTheme.lightTheme,\r\n+        darkTheme: AppTheme.darkTheme,\r\n+        themeMode: ThemeMode.system,\r\n+        routerConfig: AppRouter.router,\r\n+        localizationsDelegates: const [\r\n+          GlobalMaterialLocalizations.delegate,\r\n+          GlobalWidgetsLocalizations.delegate,\r\n+          GlobalCupertinoLocalizations.delegate,\r\n+        ],\r\n+        supportedLocales: const [\r\n+          Locale('en', 'US'),\r\n+          Locale('am', 'ET'), // Amharic\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+}\r\n"
+                }
+            ],
+            "date": 1766327024431,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

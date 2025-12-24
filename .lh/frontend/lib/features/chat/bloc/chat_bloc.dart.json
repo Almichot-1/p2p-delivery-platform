@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/chat/bloc/chat_bloc.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327121756,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766329159159,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,94 @@\n+import 'dart:async';\r\n+import 'package:flutter_bloc/flutter_bloc.dart';\r\n+import '../../../../core/services/firebase_service.dart';\r\n+import '../data/repositories/chat_repository.dart';\r\n+import 'chat_event.dart';\r\n+import 'chat_state.dart';\r\n \r\n+class ChatBloc extends Bloc<ChatEvent, ChatState> {\r\n+  final ChatRepository _chatRepository;\r\n+  final FirebaseService _firebaseService;\r\n+  StreamSubscription? _messagesSubscription;\r\n+\r\n+  ChatBloc(this._chatRepository)\r\n+      : _firebaseService = FirebaseService(),\r\n+        super(ChatInitial()) {\r\n+    on<ChatMessagesRequested>(_onMessagesRequested);\r\n+    on<ChatSendMessageRequested>(_onSendMessageRequested);\r\n+    on<ChatSendImageRequested>(_onSendImageRequested);\r\n+    on<ChatMarkAsReadRequested>(_onMarkAsReadRequested);\r\n+  }\r\n+\r\n+  Future<void> _onMessagesRequested(\r\n+    ChatMessagesRequested event,\r\n+    Emitter<ChatState> emit,\r\n+  ) async {\r\n+    emit(ChatLoading());\r\n+\r\n+    await _messagesSubscription?.cancel();\r\n+    _messagesSubscription = _chatRepository.getMessages(event.matchId).listen(\r\n+          (messages) => emit(ChatMessagesLoaded(messages)),\r\n+          onError: (error) => emit(ChatError(error.toString())),\r\n+        );\r\n+  }\r\n+\r\n+  Future<void> _onSendMessageRequested(\r\n+    ChatSendMessageRequested event,\r\n+    Emitter<ChatState> emit,\r\n+  ) async {\r\n+    try {\r\n+      final currentUser = _firebaseService.currentUser;\r\n+      if (currentUser == null) throw Exception('Not authenticated');\r\n+\r\n+      await _chatRepository.sendMessage(\r\n+        matchId: event.matchId,\r\n+        senderId: currentUser.uid,\r\n+        senderName: currentUser.displayName ?? 'User',\r\n+        content: event.content,\r\n+      );\r\n+    } catch (e) {\r\n+      emit(ChatError(e.toString()));\r\n+    }\r\n+  }\r\n+\r\n+  Future<void> _onSendImageRequested(\r\n+    ChatSendImageRequested event,\r\n+    Emitter<ChatState> emit,\r\n+  ) async {\r\n+    emit(ChatImageSending());\r\n+\r\n+    try {\r\n+      final currentUser = _firebaseService.currentUser;\r\n+      if (currentUser == null) throw Exception('Not authenticated');\r\n+\r\n+      await _chatRepository.sendImageMessage(\r\n+        matchId: event.matchId,\r\n+        senderId: currentUser.uid,\r\n+        senderName: currentUser.displayName ?? 'User',\r\n+        imageFile: event.imageFile,\r\n+      );\r\n+    } catch (e) {\r\n+      emit(ChatError(e.toString()));\r\n+    }\r\n+  }\r\n+\r\n+  Future<void> _onMarkAsReadRequested(\r\n+    ChatMarkAsReadRequested event,\r\n+    Emitter<ChatState> emit,\r\n+  ) async {\r\n+    try {\r\n+      final currentUserId = _firebaseService.currentUserId;\r\n+      if (currentUserId == null) return;\r\n+\r\n+      await _chatRepository.markMessagesAsRead(event.matchId, currentUserId);\r\n+    } catch (e) {\r\n+      // Silent fail for read receipts\r\n+    }\r\n+  }\r\n+\r\n+  @override\r\n+  Future<void> close() {\r\n+    _messagesSubscription?.cancel();\r\n+    return super.close();\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327121756,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

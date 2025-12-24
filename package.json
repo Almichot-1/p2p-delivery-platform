@@ -1,0 +1,10 @@
+{
+  "name": "mbapp-project",
+  "private": true,
+  "scripts": {
+    "serve:functions": "powershell -NoProfile -Command \"$env:npm_config_loglevel='error'; $env:npm_config_fund='false'; $env:npm_config_audit='false'; Set-Location -LiteralPath 'firebase'; npx -y firebase-tools emulators:start --only functions --project mbapp-dev-2025-noor\"",
+    "serve:backend": "powershell -NoProfile -Command \"$env:npm_config_loglevel='error'; $env:npm_config_fund='false'; $env:npm_config_audit='false'; Set-Location -LiteralPath 'firebase'; npx -y firebase-tools emulators:start --only functions,firestore,auth,storage,pubsub --project mbapp-dev-2025-noor\"",
+    "lint:functions": "powershell -NoProfile -Command \"$env:npm_config_loglevel='error'; $env:npm_config_fund='false'; $env:npm_config_audit='false'; Set-Location -LiteralPath 'firebase/functions'; npm run lint\"",
+    "install:functions": "powershell -NoProfile -Command \"$env:npm_config_loglevel='error'; $env:npm_config_fund='false'; $env:npm_config_audit='false'; Set-Location -LiteralPath 'firebase/functions'; npm install\""
+  }
+}

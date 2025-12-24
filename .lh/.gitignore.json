@@ -1,0 +1,18 @@
+{
+    "sourceFile": ".gitignore",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1766596545263,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1766596545263,
+            "name": "Commit-0",
+            "content": "# Flutter / Dart\r\n**/.dart_tool/\r\n**/.flutter-plugins\r\n**/.flutter-plugins-dependencies\r\n**/.packages\r\n**/build/\r\n**/.pub-cache/\r\n\r\n# IDEs / OS\r\n**/.idea/\r\n**/*.iml\r\n**/.vscode/\r\n**/.DS_Store\r\nThumbs.db\r\n\r\n# Node / Firebase Functions\r\n**/node_modules/\r\n**/npm-debug.log*\r\n**/yarn-debug.log*\r\n**/yarn-error.log*\r\nfirebase/.firebase/\r\nfirebase/functions/.firebase/\r\n\r\n# Firebase local config artifacts\r\nfirebase/functions/.runtimeconfig.json\r\n\r\n# Android\r\n**/.gradle/\r\n**/local.properties\r\n\r\n# iOS / macOS\r\n**/Pods/\r\n**/.symlinks/\r\n**/Flutter/ephemeral/\r\n**/DerivedData/\r\n"
+        }
+    ]
+}

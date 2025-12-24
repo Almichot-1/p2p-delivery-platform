@@ -1,0 +1,26 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isSelf(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Development rules:
+    // - Allow any authenticated user to read/write all app data.
+    // - Restrict user profile documents to the owning user.
+    // Tighten these before production.
+
+    match /users/{userId} {
+      allow read: if isSignedIn();
+      allow create, update, delete: if isSelf(userId);
+    }
+
+    match /{document=**} {
+      allow read, write: if isSignedIn();
+    }
+  }
+}

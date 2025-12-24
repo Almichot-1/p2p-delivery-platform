@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/core/constants/app_constants.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327024434,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766335292386,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,49 @@\n+import 'package:flutter/material.dart';\r\n \r\n+class AppConstants {\r\n+  AppConstants._();\r\n+\r\n+  // App Info\r\n+  static const String appName = 'Diaspora Delivery';\r\n+  static const String appVersion = '1.0.0';\r\n+\r\n+  // Pagination\r\n+  static const int defaultPageSize = 20;\r\n+\r\n+  // Timeouts\r\n+  static const Duration connectionTimeout = Duration(seconds: 30);\r\n+  static const Duration receiveTimeout = Duration(seconds: 30);\r\n+\r\n+  // Limits\r\n+  static const double maxItemWeight = 50.0; // kg\r\n+  static const int maxImagesPerRequest = 5;\r\n+  static const int maxMessageLength = 1000;\r\n+\r\n+  // Date Formats\r\n+  static const String dateFormat = 'MMM dd, yyyy';\r\n+  static const String timeFormat = 'hh:mm a';\r\n+  static const String dateTimeFormat = 'MMM dd, yyyy hh:mm a';\r\n+\r\n+  // Supported Cities\r\n+  static const List<String> ethiopianCities = [\r\n+    'Addis Ababa',\r\n+    'Dire Dawa',\r\n+    'Bahir Dar',\r\n+    'Gondar',\r\n+    'Mekelle',\r\n+    'Hawassa',\r\n+    'Jimma',\r\n+    'Adama',\r\n+  ];\r\n+\r\n+  static const List<String> internationalCities = [\r\n+    'Washington DC, USA',\r\n+    'Los Angeles, USA',\r\n+    'London, UK',\r\n+    'Dubai, UAE',\r\n+    'Toronto, Canada',\r\n+    'Frankfurt, Germany',\r\n+    'Jeddah, Saudi Arabia',\r\n+    'Johannesburg, South Africa',\r\n+  ];\r\n+}\r\n"
+                }
+            ],
+            "date": 1766327024434,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

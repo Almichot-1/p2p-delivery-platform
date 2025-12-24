@@ -1,0 +1,58 @@
+{
+    "sourceFile": "frontend/pubspec.yaml",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 10,
+            "patches": [
+                {
+                    "date": 1766327083481,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766334280734,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -47,8 +47,11 @@\n   intl: ^0.18.1\r\n   uuid: ^4.2.2\r\n   timeago: ^3.6.1\r\n   url_launcher: ^6.2.2\r\n+  hive: ^2.2.3\r\n+  hive_flutter: ^1.1.0\r\n+  image_picker: ^1.0.4\r\n   share_plus: ^7.2.1\r\n   path_provider: ^2.1.2\r\n \r\n   # Image Handling\r\n"
+                },
+                {
+                    "date": 1766334341878,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -54,9 +54,8 @@\n   share_plus: ^7.2.1\r\n   path_provider: ^2.1.2\r\n \r\n   # Image Handling\r\n-  image_picker: ^1.0.7\r\n   image_cropper: ^5.0.1\r\n \r\n   # Location\r\n   geolocator: ^10.1.0\r\n"
+                },
+                {
+                    "date": 1766334374108,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -62,10 +62,8 @@\n   geocoding: ^2.1.1\r\n \r\n   # Local Storage\r\n   shared_preferences: ^2.2.2\r\n-  hive: ^2.2.3\r\n-  hive_flutter: ^1.1.0\r\n \r\n   # Connectivity\r\n   connectivity_plus: ^5.0.2\r\n \r\n"
+                },
+                {
+                    "date": 1766334403601,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -43,9 +43,9 @@\n   flutter_form_builder: ^9.2.1\r\n   form_builder_validators: ^9.1.0\r\n \r\n   # Utilities\r\n-  intl: ^0.18.1\r\n+  intl: any\r\n   uuid: ^4.2.2\r\n   timeago: ^3.6.1\r\n   url_launcher: ^6.2.2\r\n   hive: ^2.2.3\r\n"
+                },
+                {
+                    "date": 1766334444361,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -39,10 +39,10 @@\n   flutter_spinkit: ^5.2.0\r\n   lottie: ^3.0.0\r\n \r\n   # Forms & Validation\r\n-  flutter_form_builder: ^9.2.1\r\n-  form_builder_validators: ^9.1.0\r\n+  flutter_form_builder: any\r\n+  form_builder_validators: any\r\n \r\n   # Utilities\r\n   intl: any\r\n   uuid: ^4.2.2\r\n"
+                },
+                {
+                    "date": 1766334865941,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,8 +44,9 @@\n   form_builder_validators: any\r\n \r\n   # Utilities\r\n   intl: any\r\n+  flutter_local_notifications: ^16.0.0\r\n   uuid: ^4.2.2\r\n   timeago: ^3.6.1\r\n   url_launcher: ^6.2.2\r\n   hive: ^2.2.3\r\n"
+                },
+                {
+                    "date": 1766344697283,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -88,15 +88,4 @@\n   assets:\r\n     - assets/images/\r\n     - assets/icons/\r\n     - assets/animations/\r\n-\r\n-  fonts:\r\n-    - family: Poppins\r\n-      fonts:\r\n-        - asset: assets/fonts/Poppins-Regular.ttf\r\n-        - asset: assets/fonts/Poppins-Medium.ttf\r\n-          weight: 500\r\n-        - asset: assets/fonts/Poppins-SemiBold.ttf\r\n-          weight: 600\r\n-        - asset: assets/fonts/Poppins-Bold.ttf\r\n-          weight: 700\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766345488312,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -44,9 +44,9 @@\n   form_builder_validators: any\r\n \r\n   # Utilities\r\n   intl: any\r\n-  flutter_local_notifications: ^16.0.0\r\n+  flutter_local_notifications: ^19.5.0\r\n   uuid: ^4.2.2\r\n   timeago: ^3.6.1\r\n   url_launcher: ^6.2.2\r\n   hive: ^2.2.3\r\n"
+                },
+                {
+                    "date": 1766345636148,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -55,9 +55,9 @@\n   share_plus: ^7.2.1\r\n   path_provider: ^2.1.2\r\n \r\n   # Image Handling\r\n-  image_cropper: ^5.0.1\r\n+  image_cropper: ^11.0.0\r\n \r\n   # Location\r\n   geolocator: ^10.1.0\r\n   geocoding: ^2.1.1\r\n"
+                },
+                {
+                    "date": 1766394341069,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -12,15 +12,15 @@\n   flutter_localizations:\r\n     sdk: flutter\r\n \r\n   # Firebase\r\n-  firebase_core: ^2.24.2\r\n-  firebase_auth: ^4.16.0\r\n-  cloud_firestore: ^4.14.0\r\n-  firebase_storage: ^11.6.0\r\n-  firebase_messaging: ^14.7.10\r\n-  firebase_analytics: ^10.8.0\r\n-  firebase_crashlytics: ^3.4.9\r\n+  firebase_core: ^4.3.0\r\n+  firebase_auth: ^6.1.3\r\n+  cloud_firestore: ^6.1.1\r\n+  firebase_storage: ^13.0.5\r\n+  firebase_messaging: ^16.1.0\r\n+  firebase_analytics: ^12.1.0\r\n+  firebase_crashlytics: ^5.0.6\r\n \r\n   # State Management\r\n   flutter_bloc: ^8.1.3\r\n   equatable: ^2.0.5\r\n@@ -70,8 +70,9 @@\n \r\n   # Permission Handling\r\n   permission_handler: ^11.2.0\r\n \r\n+  path: any\r\n dev_dependencies:\r\n   flutter_test:\r\n     sdk: flutter\r\n   flutter_lints: ^3.0.1\r\n"
+                }
+            ],
+            "date": 1766327083481,
+            "name": "Commit-0",
+            "content": "name: diaspora_delivery\r\ndescription: Peer-to-peer delivery app for Ethiopian diaspora\r\npublish_to: 'none'\r\nversion: 1.0.0+1\r\n\r\nenvironment:\r\n  sdk: '>=3.0.0 <4.0.0'\r\n\r\ndependencies:\r\n  flutter:\r\n    sdk: flutter\r\n  flutter_localizations:\r\n    sdk: flutter\r\n\r\n  # Firebase\r\n  firebase_core: ^2.24.2\r\n  firebase_auth: ^4.16.0\r\n  cloud_firestore: ^4.14.0\r\n  firebase_storage: ^11.6.0\r\n  firebase_messaging: ^14.7.10\r\n  firebase_analytics: ^10.8.0\r\n  firebase_crashlytics: ^3.4.9\r\n\r\n  # State Management\r\n  flutter_bloc: ^8.1.3\r\n  equatable: ^2.0.5\r\n\r\n  # Dependency Injection\r\n  get_it: ^7.6.4\r\n  injectable: ^2.3.2\r\n\r\n  # Navigation\r\n  go_router: ^13.0.0\r\n\r\n  # UI Components\r\n  flutter_svg: ^2.0.9\r\n  cached_network_image: ^3.3.1\r\n  shimmer: ^3.0.0\r\n  flutter_spinkit: ^5.2.0\r\n  lottie: ^3.0.0\r\n\r\n  # Forms & Validation\r\n  flutter_form_builder: ^9.2.1\r\n  form_builder_validators: ^9.1.0\r\n\r\n  # Utilities\r\n  intl: ^0.18.1\r\n  uuid: ^4.2.2\r\n  timeago: ^3.6.1\r\n  url_launcher: ^6.2.2\r\n  share_plus: ^7.2.1\r\n  path_provider: ^2.1.2\r\n\r\n  # Image Handling\r\n  image_picker: ^1.0.7\r\n  image_cropper: ^5.0.1\r\n\r\n  # Location\r\n  geolocator: ^10.1.0\r\n  geocoding: ^2.1.1\r\n\r\n  # Local Storage\r\n  shared_preferences: ^2.2.2\r\n  hive: ^2.2.3\r\n  hive_flutter: ^1.1.0\r\n\r\n  # Connectivity\r\n  connectivity_plus: ^5.0.2\r\n\r\n  # Permission Handling\r\n  permission_handler: ^11.2.0\r\n\r\ndev_dependencies:\r\n  flutter_test:\r\n    sdk: flutter\r\n  flutter_lints: ^3.0.1\r\n  build_runner: ^2.4.8\r\n  injectable_generator: ^2.4.1\r\n  hive_generator: ^2.0.1\r\n  bloc_test: ^9.1.5\r\n  mocktail: ^1.0.2\r\n\r\nflutter:\r\n  uses-material-design: true\r\n  generate: true\r\n\r\n  assets:\r\n    - assets/images/\r\n    - assets/icons/\r\n    - assets/animations/\r\n\r\n  fonts:\r\n    - family: Poppins\r\n      fonts:\r\n        - asset: assets/fonts/Poppins-Regular.ttf\r\n        - asset: assets/fonts/Poppins-Medium.ttf\r\n          weight: 500\r\n        - asset: assets/fonts/Poppins-SemiBold.ttf\r\n          weight: 600\r\n        - asset: assets/fonts/Poppins-Bold.ttf\r\n          weight: 700"
+        }
+    ]
+}

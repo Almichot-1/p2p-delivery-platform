@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/requests/bloc/request_event.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327062895,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766328738457,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,74 @@\n+import 'dart:io';\r\n+import 'package:equatable/equatable.dart';\r\n+import '../data/models/request_model.dart';\r\n \r\n+abstract class RequestEvent extends Equatable {\r\n+  const RequestEvent();\r\n+\r\n+  @override\r\n+  List<Object?> get props => [];\r\n+}\r\n+\r\n+class RequestsLoadRequested extends RequestEvent {\r\n+  final String? deliveryCity;\r\n+  final ItemCategory? category;\r\n+\r\n+  const RequestsLoadRequested({this.deliveryCity, this.category});\r\n+\r\n+  @override\r\n+  List<Object?> get props => [deliveryCity, category];\r\n+}\r\n+\r\n+class MyRequestsLoadRequested extends RequestEvent {}\r\n+\r\n+class RequestDetailsRequested extends RequestEvent {\r\n+  final String requestId;\r\n+\r\n+  const RequestDetailsRequested(this.requestId);\r\n+\r\n+  @override\r\n+  List<Object> get props => [requestId];\r\n+}\r\n+\r\n+class RequestCreateRequested extends RequestEvent {\r\n+  final RequestModel request;\r\n+  final List<File>? images;\r\n+\r\n+  const RequestCreateRequested(this.request, {this.images});\r\n+\r\n+  @override\r\n+  List<Object?> get props => [request, images];\r\n+}\r\n+\r\n+class RequestUpdateRequested extends RequestEvent {\r\n+  final RequestModel request;\r\n+\r\n+  const RequestUpdateRequested(this.request);\r\n+\r\n+  @override\r\n+  List<Object> get props => [request];\r\n+}\r\n+\r\n+class RequestCancelRequested extends RequestEvent {\r\n+  final String requestId;\r\n+\r\n+  const RequestCancelRequested(this.requestId);\r\n+\r\n+  @override\r\n+  List<Object> get props => [requestId];\r\n+}\r\n+\r\n+class RequestSearchRequested extends RequestEvent {\r\n+  final String deliveryCity;\r\n+  final double? maxWeight;\r\n+  final ItemCategory? category;\r\n+\r\n+  const RequestSearchRequested({\r\n+    required this.deliveryCity,\r\n+    this.maxWeight,\r\n+    this.category,\r\n+  });\r\n+\r\n+  @override\r\n+  List<Object?> get props => [deliveryCity, maxWeight, category];\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327062895,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

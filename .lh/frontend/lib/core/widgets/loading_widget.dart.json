@@ -1,0 +1,26 @@
+{
+    "sourceFile": "frontend/lib/core/widgets/loading_widget.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1766327024471,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327276165,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,119 @@\n+import 'package:flutter/material.dart';\r\n+import 'package:flutter_spinkit/flutter_spinkit.dart';\r\n+import '../theme/app_colors.dart';\r\n \r\n+enum LoadingType { circular, dots, wave, pulse }\r\n+\r\n+class LoadingWidget extends StatelessWidget {\r\n+  final LoadingType type;\r\n+  final double size;\r\n+  final Color? color;\r\n+  final String? message;\r\n+\r\n+  const LoadingWidget({\r\n+    super.key,\r\n+    this.type = LoadingType.circular,\r\n+    this.size = 40,\r\n+    this.color,\r\n+    this.message,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    final loadingColor = color ?? AppColors.primary;\r\n+\r\n+    return Center(\r\n+      child: Column(\r\n+        mainAxisSize: MainAxisSize.min,\r\n+        children: [\r\n+          _buildLoader(loadingColor),\r\n+          if (message != null) ...[\r\n+            const SizedBox(height: 16),\r\n+            Text(\r\n+              message!,\r\n+              style: TextStyle(\r\n+                color: AppColors.grey600,\r\n+                fontSize: 14,\r\n+              ),\r\n+            ),\r\n+          ],\r\n+        ],\r\n+      ),\r\n+    );\r\n+  }\r\n+\r\n+  Widget _buildLoader(Color loadingColor) {\r\n+    switch (type) {\r\n+      case LoadingType.circular:\r\n+        return SizedBox(\r\n+          width: size,\r\n+          height: size,\r\n+          child: CircularProgressIndicator(\r\n+            strokeWidth: 3,\r\n+            valueColor: AlwaysStoppedAnimation<Color>(loadingColor),\r\n+          ),\r\n+        );\r\n+      case LoadingType.dots:\r\n+        return SpinKitThreeBounce(\r\n+          color: loadingColor,\r\n+          size: size,\r\n+        );\r\n+      case LoadingType.wave:\r\n+        return SpinKitWave(\r\n+          color: loadingColor,\r\n+          size: size,\r\n+        );\r\n+      case LoadingType.pulse:\r\n+        return SpinKitPulse(\r\n+          color: loadingColor,\r\n+          size: size,\r\n+        );\r\n+    }\r\n+  }\r\n+}\r\n+\r\n+class FullScreenLoading extends StatelessWidget {\r\n+  final String? message;\r\n+\r\n+  const FullScreenLoading({super.key, this.message});\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Scaffold(\r\n+      body: LoadingWidget(\r\n+        type: LoadingType.dots,\r\n+        message: message ?? 'Loading...',\r\n+      ),\r\n+    );\r\n+  }\r\n+}\r\n+\r\n+class LoadingOverlay extends StatelessWidget {\r\n+  final bool isLoading;\r\n+  final Widget child;\r\n+  final String? message;\r\n+\r\n+  const LoadingOverlay({\r\n+    super.key,\r\n+    required this.isLoading,\r\n+    required this.child,\r\n+    this.message,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Stack(\r\n+      children: [\r\n+        child,\r\n+        if (isLoading)\r\n+          Container(\r\n+            color: Colors.black.withOpacity(0.5),\r\n+            child: LoadingWidget(\r\n+              color: AppColors.white,\r\n+              message: message,\r\n+            ),\r\n+          ),\r\n+      ],\r\n+    );\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766346679845,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -30,9 +30,9 @@\n           if (message != null) ...[\r\n             const SizedBox(height: 16),\r\n             Text(\r\n               message!,\r\n-              style: TextStyle(\r\n+              style: const TextStyle(\r\n                 color: AppColors.grey600,\r\n                 fontSize: 14,\r\n               ),\r\n             ),\r\n@@ -106,14 +106,14 @@\n       children: [\r\n         child,\r\n         if (isLoading)\r\n           Container(\r\n-            color: Colors.black.withOpacity(0.5),\r\n+            color: Colors.black.withAlpha(128),\r\n             child: LoadingWidget(\r\n               color: AppColors.white,\r\n               message: message,\r\n             ),\r\n           ),\r\n       ],\r\n     );\r\n   }\r\n\\ No newline at end of file\n-}\n+}\r\n"
+                }
+            ],
+            "date": 1766327024471,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

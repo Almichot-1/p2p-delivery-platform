@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/core/widgets/rating_stars.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327024547,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766327303992,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,105 @@\n+import 'package:flutter/material.dart';\r\n+import '../theme/app_colors.dart';\r\n \r\n+class RatingStars extends StatelessWidget {\r\n+  final double rating;\r\n+  final double size;\r\n+  final Color? activeColor;\r\n+  final Color? inactiveColor;\r\n+  final bool showValue;\r\n+  final int totalReviews;\r\n+\r\n+  const RatingStars({\r\n+    super.key,\r\n+    required this.rating,\r\n+    this.size = 20,\r\n+    this.activeColor,\r\n+    this.inactiveColor,\r\n+    this.showValue = true,\r\n+    this.totalReviews = 0,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Row(\r\n+      mainAxisSize: MainAxisSize.min,\r\n+      children: [\r\n+        ...List.generate(5, (index) {\r\n+          final starValue = index + 1;\r\n+          IconData icon;\r\n+          Color color;\r\n+\r\n+          if (rating >= starValue) {\r\n+            icon = Icons.star;\r\n+            color = activeColor ?? AppColors.secondary;\r\n+          } else if (rating >= starValue - 0.5) {\r\n+            icon = Icons.star_half;\r\n+            color = activeColor ?? AppColors.secondary;\r\n+          } else {\r\n+            icon = Icons.star_border;\r\n+            color = inactiveColor ?? AppColors.grey300;\r\n+          }\r\n+\r\n+          return Icon(icon, size: size, color: color);\r\n+        }),\r\n+        if (showValue) ...[\r\n+          const SizedBox(width: 8),\r\n+          Text(\r\n+            rating.toStringAsFixed(1),\r\n+            style: TextStyle(\r\n+              fontSize: size * 0.7,\r\n+              fontWeight: FontWeight.w600,\r\n+              color: AppColors.textPrimaryLight,\r\n+            ),\r\n+          ),\r\n+          if (totalReviews > 0) ...[\r\n+            const SizedBox(width: 4),\r\n+            Text(\r\n+              '($totalReviews)',\r\n+              style: TextStyle(\r\n+                fontSize: size * 0.6,\r\n+                color: AppColors.grey500,\r\n+              ),\r\n+            ),\r\n+          ],\r\n+        ],\r\n+      ],\r\n+    );\r\n+  }\r\n+}\r\n+\r\n+class InteractiveRatingStars extends StatelessWidget {\r\n+  final double rating;\r\n+  final ValueChanged<double> onRatingChanged;\r\n+  final double size;\r\n+\r\n+  const InteractiveRatingStars({\r\n+    super.key,\r\n+    required this.rating,\r\n+    required this.onRatingChanged,\r\n+    this.size = 40,\r\n+  });\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return Row(\r\n+      mainAxisSize: MainAxisSize.min,\r\n+      children: List.generate(5, (index) {\r\n+        final starValue = index + 1;\r\n+        return GestureDetector(\r\n+          onTap: () => onRatingChanged(starValue.toDouble()),\r\n+          child: Padding(\r\n+            padding: const EdgeInsets.symmetric(horizontal: 4),\r\n+            child: Icon(\r\n+              rating >= starValue ? Icons.star : Icons.star_border,\r\n+              size: size,\r\n+              color: rating >= starValue\r\n+                  ? AppColors.secondary\r\n+                  : AppColors.grey300,\r\n+            ),\r\n+          ),\r\n+        );\r\n+      }),\r\n+    );\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327024547,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

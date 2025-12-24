@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/reviews/data/repositories/review_repository.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327185975,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766329261998,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,67 @@\n+import 'package:cloud_firestore/cloud_firestore.dart';\r\n+import '../../../../core/services/firebase_service.dart';\r\n+import '../models/review_model.dart';\r\n \r\n+class ReviewRepository {\r\n+  final FirebaseService _firebaseService;\r\n+\r\n+  ReviewRepository(this._firebaseService);\r\n+\r\n+  // Get reviews for a user\r\n+  Stream<List<ReviewModel>> getUserReviews(String userId) {\r\n+    return _firebaseService.reviewsCollection\r\n+        .where('revieweeId', isEqualTo: userId)\r\n+        .orderBy('createdAt', descending: true)\r\n+        .snapshots()\r\n+        .map((snapshot) =>\r\n+            snapshot.docs.map((doc) => ReviewModel.fromFirestore(doc)).toList());\r\n+  }\r\n+\r\n+  // Get reviews by a user\r\n+  Stream<List<ReviewModel>> getReviewsByUser(String userId) {\r\n+    return _firebaseService.reviewsCollection\r\n+        .where('reviewerId', isEqualTo: userId)\r\n+        .orderBy('createdAt', descending: true)\r\n+        .snapshots()\r\n+        .map((snapshot) =>\r\n+            snapshot.docs.map((doc) => ReviewModel.fromFirestore(doc)).toList());\r\n+  }\r\n+\r\n+  // Check if user already reviewed this match\r\n+  Future<bool> hasReviewed(String matchId, String reviewerId) async {\r\n+    final snapshot = await _firebaseService.reviewsCollection\r\n+        .where('matchId', isEqualTo: matchId)\r\n+        .where('reviewerId', isEqualTo: reviewerId)\r\n+        .get();\r\n+    return snapshot.docs.isNotEmpty;\r\n+  }\r\n+\r\n+  // Create review\r\n+  Future<void> createReview(ReviewModel review) async {\r\n+    await _firebaseService.reviewsCollection.add(review.toFirestore());\r\n+\r\n+    // Update user's average rating\r\n+    await _updateUserRating(review.revieweeId);\r\n+  }\r\n+\r\n+  // Update user's average rating\r\n+  Future<void> _updateUserRating(String userId) async {\r\n+    final reviews = await _firebaseService.reviewsCollection\r\n+        .where('revieweeId', isEqualTo: userId)\r\n+        .get();\r\n+\r\n+    if (reviews.docs.isEmpty) return;\r\n+\r\n+    double totalRating = 0;\r\n+    for (final doc in reviews.docs) {\r\n+      totalRating += (doc.data() as Map<String, dynamic>)['rating'] ?? 0;\r\n+    }\r\n+\r\n+    final averageRating = totalRating / reviews.docs.length;\r\n+\r\n+    await _firebaseService.usersCollection.doc(userId).update({\r\n+      'rating': averageRating,\r\n+      'totalReviews': reviews.docs.length,\r\n+    });\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327185975,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

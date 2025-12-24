@@ -1,0 +1,26 @@
+{
+    "sourceFile": "frontend/lib/features/notifications/bloc/notification_bloc.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 2,
+            "patches": [
+                {
+                    "date": 1766327185979,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766330058146,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,102 @@\n+import 'dart:async';\r\n+import 'package:flutter_bloc/flutter_bloc.dart';\r\n+import '../data/repositories/notification_repository.dart';\r\n+import 'notification_event.dart';\r\n+import 'notification_state.dart';\r\n \r\n+class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {\r\n+  final NotificationRepository _notificationRepository;\r\n+  StreamSubscription? _notificationsSubscription;\r\n+\r\n+  NotificationBloc(this._notificationRepository) : super(NotificationInitial()) {\r\n+    on<NotificationsLoadRequested>(_onNotificationsLoadRequested);\r\n+    on<NotificationMarkAsReadRequested>(_onNotificationMarkAsReadRequested);\r\n+    on<NotificationsMarkAllAsReadRequested>(_onNotificationsMarkAllAsReadRequested);\r\n+    on<NotificationDeleteRequested>(_onNotificationDeleteRequested);\r\n+    on<NotificationsClearAllRequested>(_onNotificationsClearAllRequested);\r\n+    on<NotificationReceived>(_onNotificationReceived);\r\n+  }\r\n+\r\n+  Future<void> _onNotificationsLoadRequested(\r\n+    NotificationsLoadRequested event,\r\n+    Emitter<NotificationState> emit,\r\n+  ) async {\r\n+    emit(NotificationLoading());\r\n+\r\n+    await _notificationsSubscription?.cancel();\r\n+    _notificationsSubscription = _notificationRepository\r\n+        .getUserNotifications(event.userId)\r\n+        .listen(\r\n+      (notifications) {\r\n+        final unreadCount = notifications.where((n) => !n.isRead).length;\r\n+        emit(NotificationsLoaded(\r\n+          notifications: notifications,\r\n+          unreadCount: unreadCount,\r\n+        ));\r\n+      },\r\n+      onError: (error) => emit(NotificationError(error.toString())),\r\n+    );\r\n+  }\r\n+\r\n+  Future<void> _onNotificationMarkAsReadRequested(\r\n+    NotificationMarkAsReadRequested event,\r\n+    Emitter<NotificationState> emit,\r\n+  ) async {\r\n+    try {\r\n+      await _notificationRepository.markAsRead(event.notificationId);\r\n+      emit(NotificationMarkedAsRead());\r\n+    } catch (e) {\r\n+      emit(NotificationError(e.toString()));\r\n+    }\r\n+  }\r\n+\r\n+  Future<void> _onNotificationsMarkAllAsReadRequested(\r\n+    NotificationsMarkAllAsReadRequested event,\r\n+    Emitter<NotificationState> emit,\r\n+  ) async {\r\n+    try {\r\n+      await _notificationRepository.markAllAsRead(event.userId);\r\n+      emit(NotificationsMarkedAllAsRead());\r\n+    } catch (e) {\r\n+      emit(NotificationError(e.toString()));\r\n+    }\r\n+  }\r\n+\r\n+  Future<void> _onNotificationDeleteRequested(\r\n+    NotificationDeleteRequested event,\r\n+    Emitter<NotificationState> emit,\r\n+  ) async {\r\n+    try {\r\n+      await _notificationRepository.deleteNotification(event.notificationId);\r\n+      emit(NotificationDeleted());\r\n+    } catch (e) {\r\n+      emit(NotificationError(e.toString()));\r\n+    }\r\n+  }\r\n+\r\n+  Future<void> _onNotificationsClearAllRequested(\r\n+    NotificationsClearAllRequested event,\r\n+    Emitter<NotificationState> emit,\r\n+  ) async {\r\n+    try {\r\n+      await _notificationRepository.clearAllNotifications(event.userId);\r\n+      emit(NotificationsCleared());\r\n+    } catch (e) {\r\n+      emit(NotificationError(e.toString()));\r\n+    }\r\n+  }\r\n+\r\n+  void _onNotificationReceived(\r\n+    NotificationReceived event,\r\n+    Emitter<NotificationState> emit,\r\n+  ) {\r\n+    // Handle incoming push notification\r\n+    // This can trigger a reload or update the state directly\r\n+  }\r\n+\r\n+  @override\r\n+  Future<void> close() {\r\n+    _notificationsSubscription?.cancel();\r\n+    return super.close();\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                },
+                {
+                    "date": 1766335024515,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -85,18 +85,18 @@\n       emit(NotificationError(e.toString()));\r\n     }\r\n   }\r\n \r\n-  void _onNotificationReceived(\r\n+  Future<void> _onNotificationReceived(\r\n     NotificationReceived event,\r\n     Emitter<NotificationState> emit,\r\n-  ) {\r\n-    // Handle incoming push notification\r\n-    // This can trigger a reload or update the state directly\r\n+  ) async {\r\n+    // Handle incoming notification if needed\r\n+    // For now, the stream listener handles updates\r\n   }\r\n \r\n   @override\r\n   Future<void> close() {\r\n\\ No newline at end of file\n     _notificationsSubscription?.cancel();\r\n     return super.close();\r\n   }\r\n-}\n+}\r\n"
+                }
+            ],
+            "date": 1766327185979,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

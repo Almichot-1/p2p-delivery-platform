@@ -1,0 +1,22 @@
+{
+    "sourceFile": "frontend/lib/features/reviews/presentation/screens/reviews_screen.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1766327185976,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1766329322730,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -1,1 +1,59 @@\n+import 'package:flutter/material.dart';\r\n+import 'package:flutter_bloc/flutter_bloc.dart';\r\n \r\n+import '../../../../config/dependency_injection.dart';\r\n+import '../../../../core/widgets/loading_widget.dart';\r\n+import '../../../../core/widgets/empty_state_widget.dart';\r\n+import '../../bloc/review_bloc.dart';\r\n+import '../../bloc/review_event.dart';\r\n+import '../../bloc/review_state.dart';\r\n+import '../widgets/review_card.dart';\r\n+\r\n+class ReviewsScreen extends StatelessWidget {\r\n+  final String userId;\r\n+\r\n+  const ReviewsScreen({super.key, required this.userId});\r\n+\r\n+  @override\r\n+  Widget build(BuildContext context) {\r\n+    return BlocProvider(\r\n+      create: (_) => getIt<ReviewBloc>()..add(ReviewsLoadRequested(userId)),\r\n+      child: Scaffold(\r\n+        appBar: AppBar(\r\n+          title: const Text('Reviews'),\r\n+        ),\r\n+        body: BlocBuilder<ReviewBloc, ReviewState>(\r\n+          builder: (context, state) {\r\n+            if (state is ReviewLoading) {\r\n+              return const LoadingWidget();\r\n+            }\r\n+\r\n+            if (state is ReviewError) {\r\n+              return Center(child: Text(state.message));\r\n+            }\r\n+\r\n+            if (state is ReviewsLoaded) {\r\n+              if (state.reviews.isEmpty) {\r\n+                return const EmptyStateWidget(\r\n+                  icon: Icons.star_border,\r\n+                  title: 'No Reviews Yet',\r\n+                  subtitle: 'Reviews will appear here',\r\n+                );\r\n+              }\r\n+\r\n+              return ListView.builder(\r\n+                padding: const EdgeInsets.all(16),\r\n+                itemCount: state.reviews.length,\r\n+                itemBuilder: (context, index) {\r\n+                  return ReviewCard(review: state.reviews[index]);\r\n+                },\r\n+              );\r\n+            }\r\n+\r\n+            return const SizedBox.shrink();\r\n+          },\r\n+        ),\r\n+      ),\r\n+    );\r\n+  }\r\n+}\n\\ No newline at end of file\n"
+                }
+            ],
+            "date": 1766327185976,
+            "name": "Commit-0",
+            "content": "\r\n"
+        }
+    ]
+}

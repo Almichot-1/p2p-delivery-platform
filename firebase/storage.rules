@@ -1,0 +1,74 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    
+    // Helper functions
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return request.auth.uid == userId;
+    }
+    
+    function isValidImage() {
+      return request.resource.contentType.matches('image/.*')
+        && request.resource.size < 5 * 1024 * 1024; // 5MB max
+    }
+    
+    function isValidDocument() {
+      return (request.resource.contentType.matches('image/.*') 
+        || request.resource.contentType == 'application/pdf')
+        && request.resource.size < 10 * 1024 * 1024; // 10MB max
+    }
+    
+    // ============================================
+    // USER PROFILE IMAGES
+    // ============================================
+    match /users/{userId}/profile/{fileName} {
+      // Anyone can view profile images
+      allow read: if isAuthenticated();
+      
+      // Only owner can upload/delete their profile image
+      allow write: if isOwner(userId) && isValidImage();
+    }
+    
+    // ============================================
+    // VERIFICATION DOCUMENTS (private)
+    // ============================================
+    match /users/{userId}/verification/{fileName} {
+      // Only owner and admins can read
+      allow read: if isOwner(userId);
+      
+      // Only owner can upload
+      allow write: if isOwner(userId) && isValidDocument();
+    }
+    
+    // ============================================
+    // REQUEST ITEM IMAGES
+    // ============================================
+    match /requests/{requestId}/images/{fileName} {
+      // Anyone authenticated can view
+      allow read: if isAuthenticated();
+      
+      // Request owner can upload (validated in Cloud Function)
+      allow create: if isAuthenticated() && isValidImage();
+      
+      // Only owner can delete
+      allow delete: if isAuthenticated();
+    }
+    
+    // ============================================
+    // CHAT ATTACHMENTS
+    // ============================================
+    match /matches/{matchId}/attachments/{fileName} {
+      // Match participants can read (validated client-side)
+      allow read: if isAuthenticated();
+      
+      // Authenticated users can upload
+      allow create: if isAuthenticated() && isValidImage();
+      
+      allow delete: if false; // Preserve chat history
+    }
+  }
+}
