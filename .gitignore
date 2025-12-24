@@ -6,6 +6,12 @@
 **/build/
 **/.pub-cache/
 
+# Local History (VS Code extension)
+.lh/
+
+# Logs
+**/*-debug.log
+
 # IDEs / OS
 **/.idea/
 **/*.iml
