@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "295209906788",
+    "project_id": "diaspora-delivery",
+    "storage_bucket": "diaspora-delivery.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:295209906788:android:99478b468ff5a645406571",
+        "android_client_info": {
+          "package_name": "com.diaspora.delivery.diaspora_delivery"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtEYCm-8_LmolO-63QIVvig4UpHLnx3N8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
