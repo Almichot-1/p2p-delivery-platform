@@ -12,7 +12,6 @@ import '../features/auth/presentation/screens/onboarding_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
-import '../features/home/presentation/screens/placeholder_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
@@ -22,6 +21,11 @@ import '../features/trips/presentation/screens/my_trips_screen.dart';
 import '../features/trips/presentation/screens/trip_details_screen.dart';
 import '../features/trips/presentation/screens/trips_list_screen.dart';
 import '../features/trips/data/models/trip_model.dart';
+import '../features/requests/presentation/screens/requests_list_screen.dart';
+import '../features/requests/presentation/screens/create_request_screen.dart';
+import '../features/requests/presentation/screens/request_details_screen.dart';
+import '../features/requests/presentation/screens/my_requests_screen.dart';
+import '../features/requests/data/models/request_model.dart';
 
 class RouteNames {
   static const String splash = 'splash';
@@ -39,6 +43,7 @@ class RouteNames {
   static const String tripsCreate = 'trips-create';
   static const String myTrips = 'my-trips';
   static const String requestsCreate = 'requests-create';
+  static const String myRequests = 'my-requests';
 }
 
 class RoutePaths {
@@ -57,6 +62,7 @@ class RoutePaths {
   static const String myTrips = '/my-trips';
   static const String requests = '/requests';
   static const String requestsCreate = '/requests/create';
+  static const String myRequests = '/my-requests';
   static const String matches = '/matches';
   static const String chat = '/chat';
 }
@@ -72,7 +78,8 @@ class AppRoutes {
         final loggedIn = isLoggedIn(authBloc.state);
         final location = state.uri.path;
 
-        final isAuthScreen = location == RoutePaths.login || location == RoutePaths.register;
+        final isAuthScreen =
+            location == RoutePaths.login || location == RoutePaths.register;
         final isPublic = location == RoutePaths.splash ||
             location == RoutePaths.onboarding ||
             location == RoutePaths.login ||
@@ -137,7 +144,8 @@ class AppRoutes {
           path: RoutePaths.tripsCreate,
           builder: (context, state) {
             final existing = state.extra;
-            return CreateTripScreen(existing: existing is TripModel ? existing : null);
+            return CreateTripScreen(
+                existing: existing is TripModel ? existing : null);
           },
         ),
         GoRoute(
@@ -158,13 +166,30 @@ class AppRoutes {
           builder: (context, state) => const MyTripsScreen(),
         ),
         GoRoute(
+          name: RouteNames.requests,
+          path: RoutePaths.requests,
+          builder: (context, state) => const RequestsListScreen(),
+        ),
+        GoRoute(
           name: RouteNames.requestsCreate,
           path: RoutePaths.requestsCreate,
-          builder: (context, state) => const PlaceholderScreen(
-            title: 'Create Request',
-            icon: Icons.inventory_2,
-            message: 'Coming soon',
-          ),
+          builder: (context, state) {
+            final existing = state.extra;
+            return CreateRequestScreen(
+                existing: existing is RequestModel ? existing : null);
+          },
+        ),
+        GoRoute(
+          path: '${RoutePaths.requests}/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return RequestDetailsScreen(requestId: id);
+          },
+        ),
+        GoRoute(
+          name: RouteNames.myRequests,
+          path: RoutePaths.myRequests,
+          builder: (context, state) => const MyRequestsScreen(),
         ),
       ],
     );

@@ -85,11 +85,12 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     final t = widget.existing;
     if (t != null) {
       _originCity = t.originCity;
-      final existingDest =
-          (t.destinationCountry.trim().isNotEmpty && t.destinationCountry != 'Ethiopia')
-              ? t.destinationCountry
-              : t.destinationCity;
-      _destinationCountry = _abroadCountries.contains(existingDest) ? existingDest : null;
+      final existingDest = (t.destinationCountry.trim().isNotEmpty &&
+              t.destinationCountry != 'Ethiopia')
+          ? t.destinationCountry
+          : t.destinationCity;
+      _destinationCountry =
+          _abroadCountries.contains(existingDest) ? existingDest : null;
       _departureDate = t.departureDate;
       _returnDate = t.returnDate;
       _capacityCtrl.text = t.availableCapacityKg.toStringAsFixed(1);
@@ -183,7 +184,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     final capacity = _parseDouble(_capacityCtrl.text);
     if (capacity == null) return;
 
-    final price = _priceCtrl.text.trim().isEmpty ? null : _parseDouble(_priceCtrl.text);
+    final price =
+        _priceCtrl.text.trim().isEmpty ? null : _parseDouble(_priceCtrl.text);
 
     final destinationCountry = (_destinationCountry ?? '').trim();
     if (destinationCountry.isEmpty) {
@@ -235,7 +237,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
         return BlocProvider<TripBloc>(
           create: (_) => GetIt.instance<TripBloc>(),
           child: BlocConsumer<TripBloc, TripState>(
-            listenWhen: (_, s) => s is TripError || s is TripCreated || s is TripUpdated,
+            listenWhen: (_, s) =>
+                s is TripError || s is TripCreated || s is TripUpdated,
             listener: (context, state) {
               if (state is TripError) {
                 ScaffoldMessenger.of(context).showSnackBar(
@@ -274,25 +277,30 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                           border: OutlineInputBorder(),
                         ),
                         items: _ethiopianCities
-                            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                            .map((c) =>
+                                DropdownMenuItem(value: c, child: Text(c)))
                             .toList(growable: false),
-                        onChanged: submitting ? null : (v) => setState(() => _originCity = v),
+                        onChanged: submitting
+                            ? null
+                            : (v) => setState(() => _originCity = v),
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Origin city is required'
                             : null,
                       ),
                       const SizedBox(height: 12),
                       DropdownButtonFormField<String>(
-                        value: _destinationCountry,
+                        initialValue: _destinationCountry,
                         decoration: const InputDecoration(
-                          labelText: 'Destination country (abroad)'
-                          ,
+                          labelText: 'Destination country (abroad)',
                           border: OutlineInputBorder(),
                         ),
                         items: _abroadCountries
-                            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                            .map((c) =>
+                                DropdownMenuItem(value: c, child: Text(c)))
                             .toList(growable: false),
-                        onChanged: submitting ? null : (v) => setState(() => _destinationCountry = v),
+                        onChanged: submitting
+                            ? null
+                            : (v) => setState(() => _destinationCountry = v),
                         validator: (v) => (v == null || v.trim().isEmpty)
                             ? 'Destination country is required'
                             : null,
@@ -321,7 +329,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                       TextFormField(
                         controller: _capacityCtrl,
                         enabled: !submitting,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         decoration: const InputDecoration(
                           labelText: 'Available capacity (kg)',
                           border: OutlineInputBorder(),
@@ -329,7 +338,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                         validator: (v) {
                           final value = _parseDouble(v ?? '');
                           if (value == null) return 'Enter a valid number';
-                          if (value < 0.1 || value > 50) return 'Capacity must be 0.1–50 kg';
+                          if (value < 0.1 || value > 50)
+                            return 'Capacity must be 0.1–50 kg';
                           return null;
                         },
                       ),
@@ -337,7 +347,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                       TextFormField(
                         controller: _priceCtrl,
                         enabled: !submitting,
-                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true),
                         decoration: const InputDecoration(
                           labelText: 'Price per kg (optional)',
                           border: OutlineInputBorder(),
@@ -364,7 +375,8 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                             FilterChip(
                               label: Text(t),
                               selected: _selectedTypes.contains(t),
-                              onSelected: submitting ? null : (v) => _toggleType(t, v),
+                              onSelected:
+                                  submitting ? null : (v) => _toggleType(t, v),
                             ),
                         ],
                       ),

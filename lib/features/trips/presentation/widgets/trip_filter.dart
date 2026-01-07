@@ -7,7 +7,8 @@ class TripFilters {
   final DateTime? afterDate;
 
   bool get isEmpty =>
-      (destinationCountry == null || destinationCountry!.trim().isEmpty) && afterDate == null;
+      (destinationCountry == null || destinationCountry!.trim().isEmpty) &&
+      afterDate == null;
 }
 
 class TripFilterSheet extends StatefulWidget {
@@ -60,7 +61,9 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
     super.initState();
     final existing = widget.initial.destinationCountry?.trim();
     _destinationCountry =
-        (existing != null && _abroadCountries.contains(existing)) ? existing : null;
+        (existing != null && _abroadCountries.contains(existing))
+            ? existing
+            : null;
     _afterDate = widget.initial.afterDate;
   }
 
@@ -96,10 +99,11 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Filter trips', style: Theme.of(context).textTheme.titleMedium),
+            Text('Filter trips',
+                style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
             DropdownButtonFormField<String>(
-              value: _destinationCountry,
+              initialValue: _destinationCountry,
               decoration: const InputDecoration(
                 labelText: 'Destination country (optional)',
                 border: OutlineInputBorder(),
@@ -118,7 +122,9 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
             OutlinedButton.icon(
               onPressed: _pickDate,
               icon: const Icon(Icons.calendar_today_outlined),
-              label: Text(_afterDate == null ? 'Departure date: Any' : 'Departure after: ${_afterDate!.toLocal().toString().split(' ').first}'),
+              label: Text(_afterDate == null
+                  ? 'Departure date: Any'
+                  : 'Departure after: ${_afterDate!.toLocal().toString().split(' ').first}'),
             ),
             const SizedBox(height: 16),
             Row(

@@ -79,7 +79,8 @@ class CloudinaryService {
     );
   }
 
-  Future<List<String>> uploadRequestImages(List<File> files, String requestId) async {
+  Future<List<String>> uploadRequestImages(
+      List<File> files, String requestId) async {
     final urls = <String>[];
     for (var i = 0; i < files.length; i++) {
       final url = await uploadRequestImage(files[i], requestId, i);
@@ -96,25 +97,32 @@ class CloudinaryService {
     );
   }
 
-  static String _requestImagePublicId({required String requestId, required int index}) {
+  static String _requestImagePublicId(
+      {required String requestId, required int index}) {
     final ts = DateTime.now().millisecondsSinceEpoch;
     final id = _uuid.v4();
     return '$requestId-$index-$ts-$id';
   }
 
   static String getProfileThumbUrl(String urlOrPublicId) {
-    return _applyTransformation(urlOrPublicId, CloudinaryConstants.tProfileThumb);
+    return _applyTransformation(
+        urlOrPublicId, CloudinaryConstants.tProfileThumb);
   }
 
   static String getItemMediumUrl(String urlOrPublicId) {
     return _applyTransformation(urlOrPublicId, CloudinaryConstants.tItemMedium);
   }
 
+  static String getItemThumbUrl(String urlOrPublicId) {
+    return _applyTransformation(urlOrPublicId, CloudinaryConstants.tItemThumb);
+  }
+
   static String getChatImageUrl(String urlOrPublicId) {
     return _applyTransformation(urlOrPublicId, CloudinaryConstants.tChatImage);
   }
 
-  static String _applyTransformation(String urlOrPublicId, String transformation) {
+  static String _applyTransformation(
+      String urlOrPublicId, String transformation) {
     final value = urlOrPublicId.trim();
 
     if (value.startsWith('http://') || value.startsWith('https://')) {
@@ -122,7 +130,9 @@ class CloudinaryService {
       final idx = value.indexOf(marker);
       if (idx == -1) return value;
       final insertAt = idx + marker.length;
-      return value.substring(0, insertAt) + '$transformation/' + value.substring(insertAt);
+      return value.substring(0, insertAt) +
+          '$transformation/' +
+          value.substring(insertAt);
     }
 
     // Treat as public id.

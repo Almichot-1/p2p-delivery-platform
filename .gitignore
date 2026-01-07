@@ -43,3 +43,9 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Local debug artifacts (do not commit)
+/_apk_extract*/
+/_debug*.zip
+/_installed_base.*
+/installed_base.*
