@@ -10,13 +10,13 @@ abstract class TripEvent extends Equatable {
 }
 
 class TripsLoadRequested extends TripEvent {
-  const TripsLoadRequested({this.destinationCity, this.afterDate});
+  const TripsLoadRequested({this.destinationCountry, this.afterDate});
 
-  final String? destinationCity;
+  final String? destinationCountry;
   final DateTime? afterDate;
 
   @override
-  List<Object?> get props => <Object?>[destinationCity, afterDate];
+  List<Object?> get props => <Object?>[destinationCountry, afterDate];
 }
 
 class MyTripsLoadRequested extends TripEvent {

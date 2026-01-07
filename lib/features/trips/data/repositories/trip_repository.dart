@@ -13,7 +13,7 @@ class TripRepository {
   int _compareDepartureDesc(TripModel a, TripModel b) => b.departureDate.compareTo(a.departureDate);
 
   Stream<List<TripModel>> getActiveTrips({
-    String? destinationCity,
+    String? destinationCountry,
     DateTime? afterDate,
     int limit = 50,
   }) {
@@ -22,13 +22,16 @@ class TripRepository {
       isEqualTo: TripStatus.active.name,
     );
 
-    final normalizedCity = destinationCity?.trim();
+    final normalizedCountry = destinationCountry?.trim();
 
     return q.snapshots().map((snap) {
       Iterable<TripModel> trips = snap.docs.map(TripModel.fromFirestore);
 
-      if (normalizedCity != null && normalizedCity.isNotEmpty) {
-        trips = trips.where((t) => t.destinationCity == normalizedCity);
+      if (normalizedCountry != null && normalizedCountry.isNotEmpty) {
+        // Backward-compatible: older documents may have used destinationCity.
+        trips = trips.where(
+          (t) => t.destinationCountry == normalizedCountry || t.destinationCity == normalizedCountry,
+        );
       }
 
       if (afterDate != null) {
@@ -99,7 +102,7 @@ class TripRepository {
   }
 
   Future<List<TripModel>> searchTrips({
-    String? destinationCity,
+    String? destinationCountry,
     DateTime? departureDate,
     double? minCapacity,
     int limit = 50,
@@ -114,9 +117,11 @@ class TripRepository {
     final snap = await q.get();
     Iterable<TripModel> trips = snap.docs.map(TripModel.fromFirestore);
 
-    final normalizedCity = destinationCity?.trim();
-    if (normalizedCity != null && normalizedCity.isNotEmpty) {
-      trips = trips.where((t) => t.destinationCity == normalizedCity);
+    final normalizedCountry = destinationCountry?.trim();
+    if (normalizedCountry != null && normalizedCountry.isNotEmpty) {
+      trips = trips.where(
+        (t) => t.destinationCountry == normalizedCountry || t.destinationCity == normalizedCountry,
+      );
     }
 
     if (departureDate != null) {

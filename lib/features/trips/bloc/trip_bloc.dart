@@ -44,7 +44,7 @@ class TripBloc extends Bloc<TripEvent, TripState> {
     await _tripsSub?.cancel();
     _tripsSub = _tripRepository
         .getActiveTrips(
-          destinationCity: event.destinationCity,
+          destinationCountry: event.destinationCountry,
           afterDate: event.afterDate,
         )
         .listen(

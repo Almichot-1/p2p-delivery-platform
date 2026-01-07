@@ -24,7 +24,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
   void _load(BuildContext blocContext) {
     blocContext.read<TripBloc>().add(
           TripsLoadRequested(
-            destinationCity: _filters.destinationCity,
+            destinationCountry: _filters.destinationCountry,
             afterDate: _filters.afterDate,
           ),
         );
@@ -57,7 +57,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
       create: (_) => GetIt.instance<TripBloc>()
         ..add(
           TripsLoadRequested(
-            destinationCity: _filters.destinationCity,
+            destinationCountry: _filters.destinationCountry,
             afterDate: _filters.afterDate,
           ),
         ),
@@ -95,14 +95,14 @@ class _TripsListScreenState extends State<TripsListScreen> {
                         spacing: 8,
                         runSpacing: 8,
                         children: [
-                          if (_filters.destinationCity != null &&
-                              _filters.destinationCity!.trim().isNotEmpty)
+                          if (_filters.destinationCountry != null &&
+                              _filters.destinationCountry!.trim().isNotEmpty)
                             InputChip(
-                              label: Text('Country: ${_filters.destinationCity}'),
+                              label: Text('Country: ${_filters.destinationCountry}'),
                               onDeleted: () {
                                 setState(() {
                                   _filters = TripFilters(
-                                    destinationCity: null,
+                                    destinationCountry: null,
                                     afterDate: _filters.afterDate,
                                   );
                                 });
@@ -117,7 +117,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
                               onDeleted: () {
                                 setState(() {
                                   _filters = TripFilters(
-                                    destinationCity: _filters.destinationCity,
+                                    destinationCountry: _filters.destinationCountry,
                                     afterDate: null,
                                   );
                                 });

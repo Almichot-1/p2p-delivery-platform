@@ -42,10 +42,31 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     'Other',
   ];
 
+  static const List<String> _abroadCountries = <String>[
+    'United States (USA)',
+    'United Arab Emirates (UAE)',
+    'Saudi Arabia',
+    'Qatar',
+    'Kuwait',
+    'Bahrain',
+    'Oman',
+    'Canada',
+    'United Kingdom (UK)',
+    'Germany',
+    'France',
+    'Italy',
+    'Netherlands',
+    'Sweden',
+    'Norway',
+    'Australia',
+    'Turkey',
+    'South Africa',
+  ];
+
   final _formKey = GlobalKey<FormState>();
 
   String? _originCity;
-  final TextEditingController _destinationCountryCtrl = TextEditingController();
+  String? _destinationCountry;
 
   DateTime? _departureDate;
   DateTime? _returnDate;
@@ -64,10 +85,11 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     final t = widget.existing;
     if (t != null) {
       _originCity = t.originCity;
-      _destinationCountryCtrl.text =
+      final existingDest =
           (t.destinationCountry.trim().isNotEmpty && t.destinationCountry != 'Ethiopia')
               ? t.destinationCountry
               : t.destinationCity;
+      _destinationCountry = _abroadCountries.contains(existingDest) ? existingDest : null;
       _departureDate = t.departureDate;
       _returnDate = t.returnDate;
       _capacityCtrl.text = t.availableCapacityKg.toStringAsFixed(1);
@@ -82,7 +104,6 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
     _capacityCtrl.dispose();
     _priceCtrl.dispose();
     _notesCtrl.dispose();
-    _destinationCountryCtrl.dispose();
     super.dispose();
   }
 
@@ -164,7 +185,13 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
 
     final price = _priceCtrl.text.trim().isEmpty ? null : _parseDouble(_priceCtrl.text);
 
-    final destinationCountry = _destinationCountryCtrl.text.trim();
+    final destinationCountry = (_destinationCountry ?? '').trim();
+    if (destinationCountry.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Destination country is required.')),
+      );
+      return;
+    }
 
     final base = TripModel(
       id: widget.existing?.id ?? '',
@@ -255,18 +282,21 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
                             : null,
                       ),
                       const SizedBox(height: 12),
-                          TextFormField(
-                            controller: _destinationCountryCtrl,
-                            enabled: !submitting,
-                            textCapitalization: TextCapitalization.words,
-                            decoration: const InputDecoration(
-                              labelText: 'Destination country',
-                              border: OutlineInputBorder(),
-                            ),
-                            validator: (v) => (v == null || v.trim().isEmpty)
-                                ? 'Destination country is required'
-                                : null,
-                          ),
+                      DropdownButtonFormField<String>(
+                        value: _destinationCountry,
+                        decoration: const InputDecoration(
+                          labelText: 'Destination country (abroad)'
+                          ,
+                          border: OutlineInputBorder(),
+                        ),
+                        items: _abroadCountries
+                            .map((c) => DropdownMenuItem(value: c, child: Text(c)))
+                            .toList(growable: false),
+                        onChanged: submitting ? null : (v) => setState(() => _destinationCountry = v),
+                        validator: (v) => (v == null || v.trim().isEmpty)
+                            ? 'Destination country is required'
+                            : null,
+                      ),
                       const SizedBox(height: 12),
                       OutlinedButton.icon(
                         onPressed: submitting ? null : _pickDepartureDate,

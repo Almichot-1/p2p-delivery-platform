@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class TripFilters {
-  const TripFilters({this.destinationCity, this.afterDate});
+  const TripFilters({this.destinationCountry, this.afterDate});
 
-  final String? destinationCity;
+  final String? destinationCountry;
   final DateTime? afterDate;
 
   bool get isEmpty =>
-      (destinationCity == null || destinationCity!.trim().isEmpty) && afterDate == null;
+      (destinationCountry == null || destinationCountry!.trim().isEmpty) && afterDate == null;
 }
 
 class TripFilterSheet extends StatefulWidget {
@@ -25,21 +25,47 @@ class TripFilterSheet extends StatefulWidget {
 }
 
 class _TripFilterSheetState extends State<TripFilterSheet> {
-  final TextEditingController _destinationCountryCtrl = TextEditingController();
+  static const List<String> _abroadCountries = <String>[
+    'United States (USA)',
+    'United Arab Emirates (UAE)',
+    'Saudi Arabia',
+    'Qatar',
+    'Kuwait',
+    'Bahrain',
+    'Oman',
+    'Canada',
+    'United Kingdom (UK)',
+    'Germany',
+    'France',
+    'Netherlands',
+    'Sweden',
+    'Norway',
+    'Italy',
+    'Spain',
+    'Australia',
+    'New Zealand',
+    'South Africa',
+    'Turkey',
+    'India',
+    'China',
+    'Japan',
+    'South Korea',
+  ];
+
+  String? _destinationCountry;
   DateTime? _afterDate;
 
   @override
   void initState() {
     super.initState();
-    _destinationCountryCtrl.text = widget.initial.destinationCity?.trim() ?? '';
+    final existing = widget.initial.destinationCountry?.trim();
+    _destinationCountry =
+        (existing != null && _abroadCountries.contains(existing)) ? existing : null;
     _afterDate = widget.initial.afterDate;
   }
 
   @override
-  void dispose() {
-    _destinationCountryCtrl.dispose();
-    super.dispose();
-  }
+  void dispose() => super.dispose();
 
   Future<void> _pickDate() async {
     final now = DateTime.now();
@@ -56,7 +82,7 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
 
   void _reset() {
     setState(() {
-      _destinationCountryCtrl.text = '';
+      _destinationCountry = null;
       _afterDate = null;
     });
   }
@@ -72,13 +98,21 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
           children: [
             Text('Filter trips', style: Theme.of(context).textTheme.titleMedium),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _destinationCountryCtrl,
-              textCapitalization: TextCapitalization.words,
+            DropdownButtonFormField<String>(
+              value: _destinationCountry,
               decoration: const InputDecoration(
                 labelText: 'Destination country (optional)',
                 border: OutlineInputBorder(),
               ),
+              items: _abroadCountries
+                  .map(
+                    (c) => DropdownMenuItem<String>(
+                      value: c,
+                      child: Text(c),
+                    ),
+                  )
+                  .toList(growable: false),
+              onChanged: (v) => setState(() => _destinationCountry = v),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
@@ -99,10 +133,9 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
                 Expanded(
                   child: FilledButton(
                     onPressed: () {
-                      final destinationCountry = _destinationCountryCtrl.text.trim();
                       widget.onApply(
                         TripFilters(
-                          destinationCity: destinationCountry.isEmpty ? null : destinationCountry,
+                          destinationCountry: _destinationCountry,
                           afterDate: _afterDate,
                         ),
                       );
