@@ -4,7 +4,7 @@ import '../widgets/bottom_nav_bar.dart';
 import '../../../trips/presentation/screens/trips_list_screen.dart';
 import '../../../requests/presentation/screens/requests_list_screen.dart';
 import '../../../matches/presentation/screens/matches_screen.dart';
-import '../../../chat/presentation/screens/chat_screen.dart';
+import '../../../chat/presentation/screens/conversations_screen.dart';
 import 'home_tab.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _HomeScreenState extends State<HomeScreen> {
           TripsListScreen(),
           RequestsListScreen(),
           MatchesScreen(),
-          ChatScreen(),
+          ConversationsScreen(),
         ],
       ),
       bottomNavigationBar: BottomNavBar(

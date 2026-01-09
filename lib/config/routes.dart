@@ -12,12 +12,14 @@ import '../features/auth/presentation/screens/onboarding_screen.dart';
 import '../features/auth/presentation/screens/register_screen.dart';
 import '../features/auth/presentation/screens/splash_screen.dart';
 import '../features/home/presentation/screens/home_screen.dart';
+import '../features/home/presentation/screens/search_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
 import '../features/profile/presentation/screens/settings_screen.dart';
 import '../features/trips/presentation/screens/create_trip_screen.dart';
 import '../features/trips/presentation/screens/my_trips_screen.dart';
+import '../features/trips/presentation/screens/matching_requests_screen.dart';
 import '../features/trips/presentation/screens/trip_details_screen.dart';
 import '../features/trips/presentation/screens/trips_list_screen.dart';
 import '../features/trips/data/models/trip_model.dart';
@@ -25,7 +27,12 @@ import '../features/requests/presentation/screens/requests_list_screen.dart';
 import '../features/requests/presentation/screens/create_request_screen.dart';
 import '../features/requests/presentation/screens/request_details_screen.dart';
 import '../features/requests/presentation/screens/my_requests_screen.dart';
+import '../features/requests/presentation/screens/matching_trips_screen.dart';
 import '../features/requests/data/models/request_model.dart';
+import '../features/matches/presentation/screens/matches_screen.dart';
+import '../features/matches/presentation/screens/match_details_screen.dart';
+import '../features/chat/presentation/screens/chat_screen.dart';
+import '../features/chat/presentation/screens/conversations_screen.dart';
 
 class RouteNames {
   static const String splash = 'splash';
@@ -39,6 +46,7 @@ class RouteNames {
   static const String requests = 'requests';
   static const String matches = 'matches';
   static const String chat = 'chat';
+  static const String conversations = 'conversations';
   static const String notifications = 'notifications';
   static const String tripsCreate = 'trips-create';
   static const String myTrips = 'my-trips';
@@ -53,6 +61,7 @@ class RoutePaths {
   static const String register = '/register';
   static const String forgotPassword = '/forgot-password';
   static const String home = '/home';
+  static const String search = '/search';
   static const String profile = '/profile';
   static const String profileEdit = '/profile/edit';
   static const String settings = '/settings';
@@ -65,6 +74,7 @@ class RoutePaths {
   static const String myRequests = '/my-requests';
   static const String matches = '/matches';
   static const String chat = '/chat';
+  static const String conversations = '/conversations';
 }
 
 class AppRoutes {
@@ -122,6 +132,10 @@ class AppRoutes {
           builder: (context, state) => const HomeScreen(),
         ),
         GoRoute(
+          path: RoutePaths.search,
+          builder: (context, state) => const SearchScreen(),
+        ),
+        GoRoute(
           name: RouteNames.profile,
           path: RoutePaths.profile,
           builder: (context, state) => const ProfileScreen(),
@@ -161,6 +175,13 @@ class AppRoutes {
           },
         ),
         GoRoute(
+          path: '${RoutePaths.trips}/:tripId/matching-requests',
+          builder: (context, state) {
+            final id = state.pathParameters['tripId'] ?? '';
+            return MatchingRequestsScreen(tripId: id);
+          },
+        ),
+        GoRoute(
           name: RouteNames.myTrips,
           path: RoutePaths.myTrips,
           builder: (context, state) => const MyTripsScreen(),
@@ -187,9 +208,40 @@ class AppRoutes {
           },
         ),
         GoRoute(
+          path: '${RoutePaths.requests}/:requestId/matching-trips',
+          builder: (context, state) {
+            final id = state.pathParameters['requestId'] ?? '';
+            return MatchingTripsScreen(requestId: id);
+          },
+        ),
+        GoRoute(
           name: RouteNames.myRequests,
           path: RoutePaths.myRequests,
           builder: (context, state) => const MyRequestsScreen(),
+        ),
+        GoRoute(
+          name: RouteNames.matches,
+          path: RoutePaths.matches,
+          builder: (context, state) => const MatchesScreen(),
+        ),
+        GoRoute(
+          path: '${RoutePaths.matches}/:id',
+          builder: (context, state) {
+            final id = state.pathParameters['id'] ?? '';
+            return MatchDetailsScreen(matchId: id);
+          },
+        ),
+        GoRoute(
+          name: RouteNames.conversations,
+          path: RoutePaths.conversations,
+          builder: (context, state) => const ConversationsScreen(),
+        ),
+        GoRoute(
+          path: '${RoutePaths.chat}/:matchId',
+          builder: (context, state) {
+            final matchId = state.pathParameters['matchId'] ?? '';
+            return ChatScreen(matchId: matchId);
+          },
         ),
       ],
     );

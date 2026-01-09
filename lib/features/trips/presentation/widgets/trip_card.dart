@@ -9,10 +9,12 @@ class TripCard extends StatelessWidget {
     super.key,
     required this.trip,
     this.onTap,
+    this.action,
   });
 
   final TripModel trip;
   final VoidCallback? onTap;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -116,6 +118,13 @@ class TripCard extends StatelessWidget {
                         onPressed: null,
                       ),
                   ],
+                ),
+              ],
+              if (action != null) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: action!,
                 ),
               ],
             ],

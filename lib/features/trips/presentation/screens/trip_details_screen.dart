@@ -259,12 +259,46 @@ class _TripDetailsBody extends StatelessWidget {
                     Text(trip.notes!, style: theme.textTheme.bodyMedium),
                     const SizedBox(height: 12),
                   ],
+                  if (isOwner && trip.status == TripStatus.active) ...[
+                    FilledButton.icon(
+                      onPressed: trip.isUpcoming
+                          ? () => context.push(
+                                '${RoutePaths.trips}/${trip.id}/matching-requests',
+                              )
+                          : null,
+                      icon: const Icon(Icons.link),
+                      label: const Text('Find Requests to Carry'),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   const SizedBox(height: 12),
                   if (!isOwner)
                     FilledButton.icon(
                       onPressed: () {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Contact Traveler (placeholder)')),
+                        // To contact a traveler, user needs to have a request first
+                        // Navigate to create a request or show info
+                        showDialog(
+                          context: context,
+                          builder: (ctx) => AlertDialog(
+                            title: const Text('Contact Traveler'),
+                            content: const Text(
+                              'To contact this traveler, you need to create a delivery request first. '
+                              'Once you have a request, you can match it with this trip and start chatting after the match is confirmed.',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.pop(ctx),
+                                child: const Text('Cancel'),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  Navigator.pop(ctx);
+                                  context.push(RoutePaths.requestsCreate);
+                                },
+                                child: const Text('Create Request'),
+                              ),
+                            ],
+                          ),
                         );
                       },
                       icon: const Icon(Icons.chat_bubble_outline),

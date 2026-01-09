@@ -6,6 +6,12 @@ import '../features/auth/bloc/auth_bloc.dart';
 import '../features/auth/data/repositories/auth_repository.dart';
 import '../features/profile/bloc/profile_bloc.dart';
 import '../features/profile/data/repositories/profile_repository.dart';
+import '../features/chat/bloc/chat_bloc.dart';
+import '../features/chat/data/repositories/chat_repository.dart';
+import '../features/matches/bloc/match_bloc.dart';
+import '../features/matches/data/repositories/match_repository.dart';
+import '../features/notifications/bloc/notification_bloc.dart';
+import '../features/notifications/data/repositories/notification_repository.dart';
 import '../features/requests/bloc/request_bloc.dart';
 import '../features/requests/data/repositories/request_repository.dart';
 import '../features/trips/bloc/trip_bloc.dart';
@@ -53,5 +59,34 @@ void configureDependencies() {
     () => RequestBloc(requestRepository: getIt<RequestRepository>()),
   );
 
-  // Placeholders for future repos
+  // Chat (registered before Matches since MatchBloc depends on ChatRepository)
+  getIt.registerLazySingleton<ChatRepository>(
+    () => ChatRepository(getIt<FirebaseService>(), getIt<CloudinaryService>()),
+  );
+  getIt.registerFactory<ChatBloc>(
+    () => ChatBloc(
+      chatRepository: getIt<ChatRepository>(),
+      firebaseService: getIt<FirebaseService>(),
+    ),
+  );
+
+  // Matches
+  getIt.registerLazySingleton<MatchRepository>(
+    () => MatchRepository(getIt<FirebaseService>()),
+  );
+  getIt.registerFactory<MatchBloc>(
+    () => MatchBloc(
+      matchRepository: getIt<MatchRepository>(),
+      chatRepository: getIt<ChatRepository>(),
+      notificationRepository: getIt<NotificationRepository>(),
+    ),
+  );
+
+  // Notifications
+  getIt.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepository(getIt<FirebaseService>()),
+  );
+  getIt.registerFactory<NotificationBloc>(
+    () => NotificationBloc(getIt<NotificationRepository>()),
+  );
 }

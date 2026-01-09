@@ -13,7 +13,7 @@ class TripRepository {
   int _compareDepartureDesc(TripModel a, TripModel b) => b.departureDate.compareTo(a.departureDate);
 
   Stream<List<TripModel>> getActiveTrips({
-    String? destinationCountry,
+    String? destination,
     DateTime? afterDate,
     int limit = 50,
   }) {
@@ -22,15 +22,16 @@ class TripRepository {
       isEqualTo: TripStatus.active.name,
     );
 
-    final normalizedCountry = destinationCountry?.trim();
+    final normalizedDest = destination?.trim().toLowerCase();
 
     return q.snapshots().map((snap) {
       Iterable<TripModel> trips = snap.docs.map(TripModel.fromFirestore);
 
-      if (normalizedCountry != null && normalizedCountry.isNotEmpty) {
-        // Backward-compatible: older documents may have used destinationCity.
+      if (normalizedDest != null && normalizedDest.isNotEmpty) {
+        // Match against both country and city (case-insensitive)
         trips = trips.where(
-          (t) => t.destinationCountry == normalizedCountry || t.destinationCity == normalizedCountry,
+          (t) => t.destinationCountry.toLowerCase() == normalizedDest || 
+                 t.destinationCity.toLowerCase() == normalizedDest,
         );
       }
 
@@ -62,6 +63,14 @@ class TripRepository {
   }
 
   Future<String> createTrip(TripModel trip) async {
+    // Validate capacity
+    if (trip.availableCapacityKg <= 0) {
+      throw Exception('Available capacity must be greater than 0');
+    }
+    if (trip.availableCapacityKg > 100) {
+      throw Exception('Available capacity cannot exceed 100 kg');
+    }
+
     final doc = _firebaseService.trips.doc();
 
     final data = trip
@@ -102,7 +111,7 @@ class TripRepository {
   }
 
   Future<List<TripModel>> searchTrips({
-    String? destinationCountry,
+    String? destination,
     DateTime? departureDate,
     double? minCapacity,
     int limit = 50,
@@ -117,10 +126,11 @@ class TripRepository {
     final snap = await q.get();
     Iterable<TripModel> trips = snap.docs.map(TripModel.fromFirestore);
 
-    final normalizedCountry = destinationCountry?.trim();
-    if (normalizedCountry != null && normalizedCountry.isNotEmpty) {
+    final normalizedDest = destination?.trim().toLowerCase();
+    if (normalizedDest != null && normalizedDest.isNotEmpty) {
       trips = trips.where(
-        (t) => t.destinationCountry == normalizedCountry || t.destinationCity == normalizedCountry,
+        (t) => t.destinationCountry.toLowerCase() == normalizedDest || 
+               t.destinationCity.toLowerCase() == normalizedDest,
       );
     }
 

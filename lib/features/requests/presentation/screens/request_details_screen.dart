@@ -105,6 +105,10 @@ class _RequestDetailsBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final authState = context.read<AuthBloc>().state;
+    final isOwner = authState is AuthAuthenticated &&
+        authState.user.uid == request.requesterId;
+
     return ListView(
       children: [
         if (request.imageUrls.isNotEmpty)
@@ -177,6 +181,17 @@ class _RequestDetailsBody extends StatelessWidget {
                 _KeyValue(
                     label: 'Matched traveler',
                     value: request.matchedTravelerId!),
+
+              if (isOwner && request.status == RequestStatus.active) ...[
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () => context.push(
+                    '${RoutePaths.requests}/${request.id}/matching-trips',
+                  ),
+                  icon: const Icon(Icons.search),
+                  label: const Text('Find a Traveler'),
+                ),
+              ],
             ],
           ),
         ),

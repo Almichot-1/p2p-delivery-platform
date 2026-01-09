@@ -8,84 +8,140 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../../auth/bloc/auth_bloc.dart';
 import '../../../auth/bloc/auth_state.dart';
+import '../../../trips/data/models/trip_model.dart';
 import '../../bloc/request_bloc.dart';
 import '../../bloc/request_event.dart';
 import '../../bloc/request_state.dart';
 import '../../data/models/request_model.dart';
 import '../widgets/image_picker_grid.dart';
 
-class CreateRequestScreen extends StatefulWidget {
-  const CreateRequestScreen({
-    super.key,
-    this.existing,
+/// Data class to pass trip info when creating request from a trip
+class CreateRequestFromTrip {
+  const CreateRequestFromTrip({
+    required this.trip,
   });
 
+  final TripModel trip;
+}
+
+class CreateRequestScreen extends StatefulWidget {
+  const CreateRequestScreen({super.key, this.existing, this.fromTrip});
+
   final RequestModel? existing;
+  final CreateRequestFromTrip? fromTrip;
 
   @override
   State<CreateRequestScreen> createState() => _CreateRequestScreenState();
 }
 
 class _CreateRequestScreenState extends State<CreateRequestScreen> {
-  final _form1 = GlobalKey<FormState>();
-  final _form2 = GlobalKey<FormState>();
-  final _form3 = GlobalKey<FormState>();
-  final _form4 = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
 
-  int _step = 0;
+  // Countries with cities
+  static const Map<String, List<String>> _countryCities = {
+    'Ethiopia': ['Addis Ababa', 'Adama', 'Bahir Dar', 'Gondar', 'Hawassa', 'Dire Dawa', 'Mekelle', 'Jimma', 'Dessie', 'Harar'],
+    'United States': ['New York', 'Los Angeles', 'Washington DC', 'Chicago', 'Houston', 'Miami', 'San Francisco', 'Seattle', 'Boston', 'Atlanta'],
+    'United Arab Emirates': ['Dubai', 'Abu Dhabi', 'Sharjah', 'Ajman'],
+    'Saudi Arabia': ['Riyadh', 'Jeddah', 'Mecca', 'Medina', 'Dammam'],
+    'Qatar': ['Doha', 'Al Wakrah', 'Al Khor'],
+    'Kuwait': ['Kuwait City', 'Hawalli', 'Salmiya'],
+    'Bahrain': ['Manama', 'Riffa', 'Muharraq'],
+    'Oman': ['Muscat', 'Salalah', 'Sohar'],
+    'Canada': ['Toronto', 'Vancouver', 'Montreal', 'Calgary', 'Ottawa'],
+    'United Kingdom': ['London', 'Manchester', 'Birmingham', 'Liverpool', 'Edinburgh'],
+    'Germany': ['Berlin', 'Munich', 'Frankfurt', 'Hamburg', 'Cologne'],
+    'France': ['Paris', 'Lyon', 'Marseille', 'Nice', 'Toulouse'],
+    'Italy': ['Rome', 'Milan', 'Naples', 'Turin', 'Florence'],
+    'Netherlands': ['Amsterdam', 'Rotterdam', 'The Hague', 'Utrecht'],
+    'Sweden': ['Stockholm', 'Gothenburg', 'Malmö'],
+    'Norway': ['Oslo', 'Bergen', 'Trondheim'],
+    'Australia': ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide'],
+    'Turkey': ['Istanbul', 'Ankara', 'Izmir', 'Antalya'],
+    'South Africa': ['Johannesburg', 'Cape Town', 'Durban', 'Pretoria'],
+    'Kenya': ['Nairobi', 'Mombasa', 'Kisumu'],
+    'Egypt': ['Cairo', 'Alexandria', 'Giza'],
+    'Israel': ['Tel Aviv', 'Jerusalem', 'Haifa'],
+    'India': ['Mumbai', 'Delhi', 'Bangalore', 'Chennai', 'Kolkata'],
+    'China': ['Beijing', 'Shanghai', 'Guangzhou', 'Shenzhen'],
+    'Japan': ['Tokyo', 'Osaka', 'Kyoto', 'Yokohama'],
+    'South Korea': ['Seoul', 'Busan', 'Incheon'],
+    'Singapore': ['Singapore'],
+    'Malaysia': ['Kuala Lumpur', 'Penang', 'Johor Bahru'],
+    'Thailand': ['Bangkok', 'Chiang Mai', 'Phuket'],
+    'Other': [],
+  };
 
-  final TextEditingController _titleCtrl = TextEditingController();
-  final TextEditingController _descriptionCtrl = TextEditingController();
-  final TextEditingController _weightCtrl = TextEditingController();
+  // Item details
+  final _titleCtrl = TextEditingController();
+  final _descriptionCtrl = TextEditingController();
+  final _weightCtrl = TextEditingController();
   RequestCategory? _category;
 
-  final TextEditingController _pickupCityCtrl = TextEditingController();
-  final TextEditingController _pickupCountryCtrl = TextEditingController();
-  final TextEditingController _pickupAddressCtrl = TextEditingController();
+  // Pickup location
+  String? _pickupCountry;
+  String? _pickupCity;
+  final _pickupCityCtrl = TextEditingController();
+  bool _showPickupManualCity = false;
 
-  final TextEditingController _deliveryCityCtrl = TextEditingController();
-  final TextEditingController _deliveryCountryCtrl = TextEditingController();
-  final TextEditingController _deliveryAddressCtrl = TextEditingController();
+  // Delivery location
+  String? _deliveryCountry;
+  String? _deliveryCity;
+  final _deliveryCityCtrl = TextEditingController();
+  bool _showDeliveryManualCity = false;
 
-  final TextEditingController _recipientNameCtrl = TextEditingController();
-  final TextEditingController _recipientPhoneCtrl = TextEditingController();
+  // Recipient
+  final _recipientNameCtrl = TextEditingController();
+  final _recipientPhoneCtrl = TextEditingController();
 
+  // Optional
   DateTime? _preferredDeliveryDate;
-  final TextEditingController _offeredPriceCtrl = TextEditingController();
+  final _offeredPriceCtrl = TextEditingController();
   bool _isUrgent = false;
 
   List<File> _localImages = <File>[];
   List<String> _uploadedUrls = <String>[];
 
   bool get _isEdit => widget.existing != null;
+  bool get _isFromTrip => widget.fromTrip != null;
+  TripModel? get _linkedTrip => widget.fromTrip?.trip;
+  List<String> get _countries => _countryCities.keys.toList();
+
+  List<String> _getCities(String? country) {
+    if (country == null || country == 'Other') return [];
+    return _countryCities[country] ?? [];
+  }
 
   @override
   void initState() {
     super.initState();
-
-    final existing = widget.existing;
-    if (existing != null) {
-      _titleCtrl.text = existing.title;
-      _descriptionCtrl.text = existing.description;
-      _weightCtrl.text = existing.weightKg.toStringAsFixed(1);
-      _category = existing.category;
-
-      _pickupCityCtrl.text = existing.pickupCity;
-      _pickupCountryCtrl.text = existing.pickupCountry;
-      _pickupAddressCtrl.text = existing.pickupAddress;
-
-      _deliveryCityCtrl.text = existing.deliveryCity;
-      _deliveryCountryCtrl.text = existing.deliveryCountry;
-      _deliveryAddressCtrl.text = existing.deliveryAddress;
-
-      _recipientNameCtrl.text = existing.recipientName;
-      _recipientPhoneCtrl.text = existing.recipientPhone;
-
-      _preferredDeliveryDate = existing.preferredDeliveryDate;
-      _offeredPriceCtrl.text = existing.offeredPrice?.toStringAsFixed(2) ?? '';
-      _isUrgent = existing.isUrgent;
-
-      _uploadedUrls = List<String>.of(existing.imageUrls);
+    final e = widget.existing;
+    if (e != null) {
+      _titleCtrl.text = e.title;
+      _descriptionCtrl.text = e.description;
+      _weightCtrl.text = e.weightKg.toStringAsFixed(1);
+      _category = e.category;
+      _pickupCountry = e.pickupCountry;
+      _pickupCity = e.pickupCity;
+      _pickupCityCtrl.text = e.pickupCity;
+      _deliveryCountry = e.deliveryCountry;
+      _deliveryCity = e.deliveryCity;
+      _deliveryCityCtrl.text = e.deliveryCity;
+      _recipientNameCtrl.text = e.recipientName;
+      _recipientPhoneCtrl.text = e.recipientPhone;
+      _preferredDeliveryDate = e.preferredDeliveryDate;
+      _offeredPriceCtrl.text = e.offeredPrice?.toStringAsFixed(2) ?? '';
+      _isUrgent = e.isUrgent;
+      _uploadedUrls = List.of(e.imageUrls);
+    } else if (_isFromTrip) {
+      // Pre-fill from trip data - pickup is trip origin, delivery is trip destination
+      final trip = _linkedTrip!;
+      _pickupCountry = trip.originCountry;
+      _pickupCity = trip.originCity;
+      _pickupCityCtrl.text = trip.originCity;
+      _deliveryCountry = trip.destinationCountry;
+      _deliveryCity = trip.destinationCity;
+      _deliveryCityCtrl.text = trip.destinationCity;
+      _preferredDeliveryDate = trip.departureDate;
     }
   }
 
@@ -95,28 +151,11 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     _descriptionCtrl.dispose();
     _weightCtrl.dispose();
     _pickupCityCtrl.dispose();
-    _pickupCountryCtrl.dispose();
-    _pickupAddressCtrl.dispose();
     _deliveryCityCtrl.dispose();
-    _deliveryCountryCtrl.dispose();
-    _deliveryAddressCtrl.dispose();
     _recipientNameCtrl.dispose();
     _recipientPhoneCtrl.dispose();
     _offeredPriceCtrl.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickPreferredDate() async {
-    final now = DateTime.now();
-    final picked = await showDatePicker(
-      context: context,
-      initialDate: _preferredDeliveryDate ?? now,
-      firstDate: DateTime(now.year, now.month, now.day),
-      lastDate: DateTime(now.year + 2),
-    );
-
-    if (picked == null) return;
-    setState(() => _preferredDeliveryDate = picked);
   }
 
   Future<void> _pickImages() async {
@@ -125,7 +164,6 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
     final picker = ImagePicker();
     final picks = await picker.pickMultiImage(imageQuality: 85);
-
     if (picks.isEmpty) return;
 
     final next = List<File>.of(_localImages);
@@ -133,134 +171,119 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       if ((_uploadedUrls.length + next.length) >= 5) break;
       next.add(File(x.path));
     }
-
     setState(() => _localImages = next);
   }
 
-  void _removeUploadedUrl(String url) {
-    setState(() => _uploadedUrls = List<String>.of(_uploadedUrls)..remove(url));
+  Future<void> _pickDate() async {
+    final now = DateTime.now();
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: _preferredDeliveryDate ?? now,
+      firstDate: now,
+      lastDate: DateTime(now.year + 2),
+    );
+    if (picked != null) setState(() => _preferredDeliveryDate = picked);
   }
 
-  bool _validateCurrentStep() {
-    final key = switch (_step) {
-      0 => _form1,
-      1 => _form2,
-      2 => _form3,
-      _ => _form4,
-    };
-    final ok = key.currentState?.validate() ?? false;
-    if (_step == 0 && _category == null) return false;
-    return ok;
-  }
+  void _submit(BuildContext blocContext) {
+    if (!_formKey.currentState!.validate()) return;
+    if (_category == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select a category')),
+      );
+      return;
+    }
 
-  Future<void> _submit(BuildContext blocContext) async {
-    final a1 = _form1.currentState?.validate() ?? false;
-    final a2 = _form2.currentState?.validate() ?? false;
-    final a3 = _form3.currentState?.validate() ?? false;
-    final a4 = _form4.currentState?.validate() ?? false;
+    final pickupCountry = (_pickupCountry ?? '').trim();
+    final pickupCity = _pickupCity?.trim() ?? _pickupCityCtrl.text.trim();
+    final deliveryCountry = (_deliveryCountry ?? '').trim();
+    final deliveryCity = _deliveryCity?.trim() ?? _deliveryCityCtrl.text.trim();
 
-    if (!a1 || !a2 || !a3 || !a4 || _category == null) {
-      setState(() => _step = 0);
+    if (pickupCountry.isEmpty || pickupCity.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Pickup location required')),
+      );
+      return;
+    }
+
+    if (deliveryCountry.isEmpty || deliveryCity.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Delivery location required')),
+      );
       return;
     }
 
     final authState = context.read<AuthBloc>().state;
-    if (authState is! AuthAuthenticated) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('You must be logged in to create a request')),
-      );
-      return;
-    }
+    if (authState is! AuthAuthenticated) return;
 
-    final weight = double.tryParse(_weightCtrl.text.trim());
-    if (weight == null || weight <= 0) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Enter a valid weight')),
-      );
-      return;
-    }
-
-    final offeredPriceText = _offeredPriceCtrl.text.trim();
-    final offeredPrice =
-        offeredPriceText.isEmpty ? null : double.tryParse(offeredPriceText);
-
+    final weight = double.tryParse(_weightCtrl.text.trim()) ?? 0;
+    final price = _offeredPriceCtrl.text.trim().isEmpty
+        ? null
+        : double.tryParse(_offeredPriceCtrl.text.trim());
     final now = DateTime.now();
+    final user = authState.user;
 
     if (_isEdit) {
-      final existing = widget.existing!;
-      final updated = existing.copyWith(
+      final updated = widget.existing!.copyWith(
         title: _titleCtrl.text.trim(),
         description: _descriptionCtrl.text.trim(),
         category: _category,
         weightKg: weight,
-        pickupCity: _pickupCityCtrl.text.trim(),
-        pickupCountry: _pickupCountryCtrl.text.trim(),
-        pickupAddress: _pickupAddressCtrl.text.trim(),
-        deliveryCity: _deliveryCityCtrl.text.trim(),
-        deliveryCountry: _deliveryCountryCtrl.text.trim(),
-        deliveryAddress: _deliveryAddressCtrl.text.trim(),
+        pickupCity: pickupCity,
+        pickupCountry: pickupCountry,
+        pickupAddress: pickupCity,
+        deliveryCity: deliveryCity,
+        deliveryCountry: deliveryCountry,
+        deliveryAddress: deliveryCity,
         recipientName: _recipientNameCtrl.text.trim(),
         recipientPhone: _recipientPhoneCtrl.text.trim(),
         preferredDeliveryDate: _preferredDeliveryDate,
-        offeredPrice: offeredPrice,
+        offeredPrice: price,
         isUrgent: _isUrgent,
         imageUrls: _uploadedUrls,
         updatedAt: now,
       );
-
       blocContext.read<RequestBloc>().add(RequestUpdateRequested(updated));
-      return;
+    } else {
+      final request = RequestModel(
+        id: '',
+        requesterId: user.uid,
+        requesterName: user.fullName,
+        requesterPhoto: user.photoUrl,
+        requesterRating: user.rating,
+        title: _titleCtrl.text.trim(),
+        description: _descriptionCtrl.text.trim(),
+        category: _category!,
+        weightKg: weight,
+        imageUrls: const [],
+        pickupCity: pickupCity,
+        pickupCountry: pickupCountry,
+        pickupAddress: pickupCity,
+        deliveryCity: deliveryCity,
+        deliveryCountry: deliveryCountry,
+        deliveryAddress: deliveryCity,
+        recipientName: _recipientNameCtrl.text.trim(),
+        recipientPhone: _recipientPhoneCtrl.text.trim(),
+        preferredDeliveryDate: _preferredDeliveryDate,
+        offeredPrice: price,
+        isUrgent: _isUrgent,
+        status: RequestStatus.active,
+        createdAt: now,
+        updatedAt: now,
+      );
+      blocContext.read<RequestBloc>().add(RequestCreateRequested(request, _localImages));
     }
-
-    final user = authState.user;
-
-    final request = RequestModel(
-      id: '',
-      requesterId: user.uid,
-      requesterName: user.fullName,
-      requesterPhoto: user.photoUrl,
-      requesterRating: user.rating,
-      title: _titleCtrl.text.trim(),
-      description: _descriptionCtrl.text.trim(),
-      category: _category!,
-      weightKg: weight,
-      imageUrls: const <String>[],
-      pickupCity: _pickupCityCtrl.text.trim(),
-      pickupCountry: _pickupCountryCtrl.text.trim(),
-      pickupAddress: _pickupAddressCtrl.text.trim(),
-      deliveryCity: _deliveryCityCtrl.text.trim(),
-      deliveryCountry: _deliveryCountryCtrl.text.trim(),
-      deliveryAddress: _deliveryAddressCtrl.text.trim(),
-      recipientName: _recipientNameCtrl.text.trim(),
-      recipientPhone: _recipientPhoneCtrl.text.trim(),
-      preferredDeliveryDate: _preferredDeliveryDate,
-      offeredPrice: offeredPrice,
-      isUrgent: _isUrgent,
-      status: RequestStatus.active,
-      createdAt: now,
-      updatedAt: now,
-    );
-
-    blocContext
-        .read<RequestBloc>()
-        .add(RequestCreateRequested(request, _localImages));
   }
 
   @override
   Widget build(BuildContext context) {
-    final title = _isEdit ? 'Edit Request' : 'Create Request';
-
     return BlocProvider<RequestBloc>(
       create: (_) => GetIt.instance<RequestBloc>(),
       child: BlocConsumer<RequestBloc, RequestState>(
-        listenWhen: (_, s) =>
-            s is RequestCreated || s is RequestUpdated || s is RequestError,
+        listenWhen: (_, s) => s is RequestCreated || s is RequestUpdated || s is RequestError,
         listener: (context, state) {
           if (state is RequestError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.message)),
-            );
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
           }
           if (state is RequestCreated || state is RequestUpdated) {
             context.pop();
@@ -268,314 +291,187 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         },
         builder: (context, state) {
           final submitting = state is RequestCreating;
-          final progress =
-              state is RequestCreating ? state.uploadProgress : null;
+          final progress = state is RequestCreating ? state.uploadProgress : null;
 
           return Scaffold(
-            appBar: AppBar(title: Text(title)),
+            appBar: AppBar(title: Text(_isEdit ? 'Edit Request' : 'Send Item')),
             body: Column(
               children: [
                 if (submitting && progress != null)
-                  LinearProgressIndicator(
-                      value: progress == 0 ? null : progress),
+                  LinearProgressIndicator(value: progress == 0 ? null : progress),
                 Expanded(
-                  child: Stepper(
-                    currentStep: _step,
-                    onStepCancel: submitting
-                        ? null
-                        : () {
-                            if (_step == 0) return;
-                            setState(() => _step -= 1);
-                          },
-                    onStepContinue: submitting
-                        ? null
-                        : () {
-                            if (_step < 3) {
-                              if (!_validateCurrentStep()) return;
-                              setState(() => _step += 1);
-                              return;
-                            }
-                            _submit(context);
-                          },
-                    controlsBuilder: (context, details) {
-                      final isLast = _step == 3;
-                      return Row(
-                        children: [
-                          FilledButton(
-                            onPressed: details.onStepContinue,
-                            child: Text(isLast
-                                ? (_isEdit ? 'Save' : 'Submit')
-                                : 'Next'),
+                  child: Form(
+                    key: _formKey,
+                    child: ListView(
+                      padding: const EdgeInsets.all(16),
+                      children: [
+                        // Item details
+                        Text('What are you sending?', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _titleCtrl,
+                          decoration: const InputDecoration(
+                            labelText: 'Item name *',
+                            hintText: 'e.g., iPhone charger, Documents',
+                            border: OutlineInputBorder(),
                           ),
-                          const SizedBox(width: 12),
-                          if (_step > 0)
-                            OutlinedButton(
-                              onPressed: details.onStepCancel,
-                              child: const Text('Back'),
+                          validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+                        ),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: DropdownButtonFormField<RequestCategory>(
+                                value: _category,
+                                decoration: const InputDecoration(
+                                  labelText: 'Category *',
+                                  border: OutlineInputBorder(),
+                                ),
+                                items: RequestCategory.values.map((c) => DropdownMenuItem(
+                                  value: c,
+                                  child: Text(_categoryLabel(c)),
+                                )).toList(),
+                                onChanged: submitting ? null : (v) => setState(() => _category = v),
+                              ),
                             ),
-                        ],
-                      );
-                    },
-                    steps: [
-                      Step(
-                        title: const Text('Item Details'),
-                        isActive: _step >= 0,
-                        content: Form(
-                          key: _form1,
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                controller: _titleCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Title',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                controller: _descriptionCtrl,
-                                maxLines: 4,
-                                decoration: const InputDecoration(
-                                  labelText: 'Description',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 12),
-                              DropdownButtonFormField<RequestCategory>(
-                                initialValue: _category,
-                                decoration: const InputDecoration(
-                                  labelText: 'Category',
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: RequestCategory.values
-                                    .map(
-                                      (c) => DropdownMenuItem<RequestCategory>(
-                                        value: c,
-                                        child: Text(_categoryLabel(c)),
-                                      ),
-                                    )
-                                    .toList(growable: false),
-                                onChanged: submitting
-                                    ? null
-                                    : (v) => setState(() => _category = v),
-                                validator: (_) =>
-                                    _category == null ? 'Required' : null,
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
+                            const SizedBox(width: 12),
+                            SizedBox(
+                              width: 100,
+                              child: TextFormField(
                                 controller: _weightCtrl,
                                 keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
-                                  labelText: 'Weight (kg)',
+                                  labelText: 'Weight *',
+                                  suffixText: 'kg',
                                   border: OutlineInputBorder(),
                                 ),
                                 validator: (v) {
-                                  final x = double.tryParse((v ?? '').trim());
-                                  if (x == null || x <= 0)
-                                    return 'Enter a valid weight';
-                                  return null;
+                                  final x = double.tryParse(v?.trim() ?? '');
+                                  return (x == null || x <= 0) ? 'Invalid' : null;
                                 },
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
-                      Step(
-                        title: const Text('Locations'),
-                        isActive: _step >= 1,
-                        content: Form(
-                          key: _form2,
-                          child: Column(
-                            children: [
-                              TextFormField(
-                                controller: _pickupCityCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Pickup city',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                controller: _pickupCountryCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Pickup country',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                controller: _pickupAddressCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Pickup address',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 16),
-                              TextFormField(
-                                controller: _deliveryCityCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Delivery city',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                controller: _deliveryCountryCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Delivery country',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
-                                controller: _deliveryAddressCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Delivery address',
-                                  border: OutlineInputBorder(),
-                                ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
-                              ),
-                            ],
-                          ),
+                        const SizedBox(height: 20),
+
+                        // Pickup location
+                        Text('Pickup Location', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        _buildLocationSection(
+                          isPickup: true,
+                          enabled: !submitting,
                         ),
-                      ),
-                      Step(
-                        title: const Text('Recipient'),
-                        isActive: _step >= 2,
-                        content: Form(
-                          key: _form3,
-                          child: Column(
-                            children: [
-                              TextFormField(
+                        const SizedBox(height: 20),
+
+                        // Delivery location
+                        Text('Delivery Location', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        _buildLocationSection(
+                          isPickup: false,
+                          enabled: !submitting,
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Recipient
+                        Text('Recipient', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
                                 controller: _recipientNameCtrl,
                                 decoration: const InputDecoration(
-                                  labelText: 'Recipient name',
+                                  labelText: 'Name *',
                                   border: OutlineInputBorder(),
                                 ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
+                                validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                               ),
-                              const SizedBox(height: 12),
-                              TextFormField(
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: TextFormField(
                                 controller: _recipientPhoneCtrl,
                                 keyboardType: TextInputType.phone,
                                 decoration: const InputDecoration(
-                                  labelText: 'Recipient phone',
+                                  labelText: 'Phone *',
                                   border: OutlineInputBorder(),
                                 ),
-                                validator: (v) =>
-                                    (v == null || v.trim().isEmpty)
-                                        ? 'Required'
-                                        : null,
+                                validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                               ),
-                            ],
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+
+                        // Optional
+                        Text('Optional', style: Theme.of(context).textTheme.titleMedium),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _descriptionCtrl,
+                          maxLines: 2,
+                          decoration: const InputDecoration(
+                            labelText: 'Description / Notes',
+                            border: OutlineInputBorder(),
                           ),
                         ),
-                      ),
-                      Step(
-                        title: const Text('Photos & Price'),
-                        isActive: _step >= 3,
-                        content: Form(
-                          key: _form4,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              ImagePickerGrid(
-                                uploadedUrls: _uploadedUrls,
-                                localFiles: _localImages,
-                                onImagesChanged: (files) =>
-                                    setState(() => _localImages = files),
-                                onRemoveUrl: _removeUploadedUrl,
+                        const SizedBox(height: 12),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: OutlinedButton.icon(
+                                onPressed: submitting ? null : _pickDate,
+                                icon: const Icon(Icons.calendar_today, size: 18),
+                                label: Text(_preferredDeliveryDate == null
+                                    ? 'Delivery date'
+                                    : '${_preferredDeliveryDate!.day}/${_preferredDeliveryDate!.month}'),
                               ),
-                              const SizedBox(height: 12),
-                              FilledButton.icon(
-                                onPressed: submitting ? null : _pickImages,
-                                icon: const Icon(Icons.photo_library_outlined),
-                                label: const Text('Add photos'),
-                              ),
-                              const SizedBox(height: 16),
-                              OutlinedButton.icon(
-                                onPressed:
-                                    submitting ? null : _pickPreferredDate,
-                                icon: const Icon(Icons.calendar_today_outlined),
-                                label: Text(
-                                  _preferredDeliveryDate == null
-                                      ? 'Preferred delivery date (optional)'
-                                      : 'Preferred: ${_preferredDeliveryDate!.toLocal().toString().split(' ').first}',
-                                ),
-                              ),
-                              const SizedBox(height: 12),
-                              TextFormField(
+                            ),
+                            const SizedBox(width: 12),
+                            SizedBox(
+                              width: 120,
+                              child: TextFormField(
                                 controller: _offeredPriceCtrl,
                                 keyboardType: TextInputType.number,
                                 decoration: const InputDecoration(
-                                  labelText: 'Offered price (optional)',
+                                  labelText: 'Price \$',
                                   border: OutlineInputBorder(),
                                 ),
-                                validator: (v) {
-                                  final s = (v ?? '').trim();
-                                  if (s.isEmpty) return null;
-                                  final x = double.tryParse(s);
-                                  if (x == null || x < 0)
-                                    return 'Enter a valid price';
-                                  return null;
-                                },
                               ),
-                              const SizedBox(height: 12),
-                              SwitchListTile(
-                                value: _isUrgent,
-                                onChanged: submitting
-                                    ? null
-                                    : (v) => setState(() => _isUrgent = v),
-                                title: const Text('Urgent'),
-                              ),
-                              if (_isEdit && _localImages.isNotEmpty)
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 8),
-                                  child: Text(
-                                    'Note: Adding new photos during edit is not supported yet.',
-                                    style:
-                                        Theme.of(context).textTheme.bodySmall,
-                                  ),
-                                ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
+                        const SizedBox(height: 8),
+                        SwitchListTile(
+                          value: _isUrgent,
+                          onChanged: submitting ? null : (v) => setState(() => _isUrgent = v),
+                          title: const Text('Urgent delivery'),
+                          contentPadding: EdgeInsets.zero,
+                        ),
+                        const SizedBox(height: 12),
+
+                        // Photos
+                        ImagePickerGrid(
+                          uploadedUrls: _uploadedUrls,
+                          localFiles: _localImages,
+                          onImagesChanged: (files) => setState(() => _localImages = files),
+                          onRemoveUrl: (url) => setState(() => _uploadedUrls.remove(url)),
+                        ),
+                        if (_localImages.length + _uploadedUrls.length < 5)
+                          TextButton.icon(
+                            onPressed: submitting ? null : _pickImages,
+                            icon: const Icon(Icons.add_photo_alternate),
+                            label: const Text('Add photos'),
+                          ),
+                        const SizedBox(height: 24),
+
+                        FilledButton.icon(
+                          onPressed: submitting ? null : () => _submit(context),
+                          icon: const Icon(Icons.send),
+                          label: Text(_isEdit ? 'Save Changes' : 'Create Request'),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ],
@@ -586,20 +482,121 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     );
   }
 
-  String _categoryLabel(RequestCategory c) {
-    switch (c) {
-      case RequestCategory.documents:
-        return 'Documents';
-      case RequestCategory.electronics:
-        return 'Electronics';
-      case RequestCategory.clothing:
-        return 'Clothing';
-      case RequestCategory.food:
-        return 'Food';
-      case RequestCategory.medicine:
-        return 'Medicine';
-      case RequestCategory.other:
-        return 'Other';
-    }
+  Widget _buildLocationSection({required bool isPickup, required bool enabled}) {
+    final country = isPickup ? _pickupCountry : _deliveryCountry;
+    final city = isPickup ? _pickupCity : _deliveryCity;
+    final cityCtrl = isPickup ? _pickupCityCtrl : _deliveryCityCtrl;
+    final showManualInput = isPickup ? _showPickupManualCity : _showDeliveryManualCity;
+    final cities = _getCities(country);
+
+    return Column(
+      children: [
+        DropdownButtonFormField<String>(
+          value: country != null && _countries.contains(country) ? country : null,
+          decoration: const InputDecoration(
+            labelText: 'Country *',
+            border: OutlineInputBorder(),
+          ),
+          items: _countries.map((c) => DropdownMenuItem(value: c, child: Text(c))).toList(),
+          onChanged: enabled ? (v) {
+            setState(() {
+              if (isPickup) {
+                _pickupCountry = v;
+                _pickupCity = null;
+                _pickupCityCtrl.clear();
+                _showPickupManualCity = false;
+              } else {
+                _deliveryCountry = v;
+                _deliveryCity = null;
+                _deliveryCityCtrl.clear();
+                _showDeliveryManualCity = false;
+              }
+            });
+          } : null,
+        ),
+        const SizedBox(height: 12),
+
+        if (cities.isNotEmpty && !showManualInput)
+          DropdownButtonFormField<String>(
+            value: city != null && cities.contains(city) ? city : null,
+            decoration: const InputDecoration(
+              labelText: 'City *',
+              border: OutlineInputBorder(),
+            ),
+            items: [
+              ...cities.map((c) => DropdownMenuItem(value: c, child: Text(c))),
+              const DropdownMenuItem(value: '__other__', child: Text('Other (enter manually)')),
+            ],
+            onChanged: enabled ? (v) {
+              setState(() {
+                if (v == '__other__') {
+                  if (isPickup) {
+                    _pickupCity = null;
+                    _pickupCityCtrl.clear();
+                    _showPickupManualCity = true;
+                  } else {
+                    _deliveryCity = null;
+                    _deliveryCityCtrl.clear();
+                    _showDeliveryManualCity = true;
+                  }
+                } else {
+                  if (isPickup) {
+                    _pickupCity = v;
+                    _pickupCityCtrl.text = v ?? '';
+                  } else {
+                    _deliveryCity = v;
+                    _deliveryCityCtrl.text = v ?? '';
+                  }
+                }
+              });
+            } : null,
+          ),
+
+        // Show manual input when "Other" selected or country has no cities
+        if (showManualInput || country == 'Other' || (country != null && cities.isEmpty))
+          Column(
+            children: [
+              TextFormField(
+                controller: cityCtrl,
+                enabled: enabled,
+                decoration: const InputDecoration(
+                  labelText: 'City *',
+                  hintText: 'Enter city name',
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
+              ),
+              if (showManualInput && cities.isNotEmpty)
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: TextButton.icon(
+                    onPressed: enabled ? () {
+                      setState(() {
+                        if (isPickup) {
+                          _showPickupManualCity = false;
+                          _pickupCityCtrl.clear();
+                        } else {
+                          _showDeliveryManualCity = false;
+                          _deliveryCityCtrl.clear();
+                        }
+                      });
+                    } : null,
+                    icon: const Icon(Icons.arrow_back, size: 16),
+                    label: const Text('Back to city list'),
+                  ),
+                ),
+            ],
+          ),
+      ],
+    );
   }
+
+  String _categoryLabel(RequestCategory c) => switch (c) {
+    RequestCategory.documents => 'Documents',
+    RequestCategory.electronics => 'Electronics',
+    RequestCategory.clothing => 'Clothing',
+    RequestCategory.food => 'Food',
+    RequestCategory.medicine => 'Medicine',
+    RequestCategory.other => 'Other',
+  };
 }

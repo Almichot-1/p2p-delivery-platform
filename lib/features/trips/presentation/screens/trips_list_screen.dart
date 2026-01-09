@@ -24,7 +24,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
   void _load(BuildContext blocContext) {
     blocContext.read<TripBloc>().add(
           TripsLoadRequested(
-            destinationCountry: _filters.destinationCountry,
+            destination: _filters.destinationCountry,
             afterDate: _filters.afterDate,
           ),
         );
@@ -57,7 +57,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
       create: (_) => GetIt.instance<TripBloc>()
         ..add(
           TripsLoadRequested(
-            destinationCountry: _filters.destinationCountry,
+            destination: _filters.destinationCountry,
             afterDate: _filters.afterDate,
           ),
         ),
@@ -177,6 +177,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
               ],
             ),
             floatingActionButton: FloatingActionButton.extended(
+              heroTag: 'trips_list_fab',
               onPressed: () => context.push(RoutePaths.tripsCreate),
               icon: const Icon(Icons.add),
               label: const Text('Post Trip'),

@@ -14,7 +14,8 @@ This repo uses a simple layered architecture (UI → BLoC → Repository → Ser
 - Trips: list, filters, create/edit, details, cancel, My Trips
 - Requests: list + filters, create/edit (multi-step), details, cancel, My Requests
 - Notifications screen scaffold
-- Matches + Chat screens are present as minimal stubs (placeholders were removed from the project)
+- Matches: lifecycle between a Trip + Request (realtime lists, details, role-based actions, validated status transitions)
+- Chat screen scaffold (placeholder was removed from the project)
 
 ## Architecture
 
@@ -109,9 +110,27 @@ adb install -r build/app/outputs/flutter-apk/app-debug.apk
 adb shell am start -n com.diaspora.delivery.diaspora_delivery/.MainActivity
 ```
 
+## Matches (Phase 6)
+
+Matches represent an agreement between a **Trip** and a **Request**.
+
+Key rules in the implementation:
+
+- Firestore `matches/{matchId}` is the single source of truth for match status.
+- UI does not write to Firestore directly; all mutations go through Repository methods with validated transitions.
+- Reads are realtime streams; the BLoC owns subscriptions and cancels them on close.
+
+Status flow (high level):
+
+- `pending` → `accepted`/`rejected`
+- `accepted` → `confirmed`
+- Delivery progression: `confirmed` → `pickedUp` → `inTransit` → `delivered`
+- Completion: `delivered` → `completed`
+- Cancellation can occur (subject to validation rules in the repository).
+
 ## Troubleshooting
 
-### Requests tab still shows an old UI after rebuilding
+### A tab still shows an old UI after rebuilding (stale APK/build artifacts)
 
 If the app UI looks "stuck" (e.g., an older tab layout/strings show up even though source changed), it can be caused by stale build artifacts.
 
@@ -122,7 +141,19 @@ flutter clean
 flutter pub get
 ```
 
-If that’s not enough, also wipe Android/Gradle build caches and rebuild:
+If that’s not enough, also wipe Android/Gradle build caches and rebuild.
+
+PowerShell (Windows):
+
+```powershell
+flutter clean
+Remove-Item -Recurse -Force .dart_tool, build -ErrorAction SilentlyContinue
+Remove-Item -Recurse -Force android\.gradle, android\build, android\app\build -ErrorAction SilentlyContinue
+flutter pub get
+flutter build apk --debug
+```
+
+Bash (macOS/Linux):
 
 ```bash
 rm -rf android/.gradle android/app/build android/build

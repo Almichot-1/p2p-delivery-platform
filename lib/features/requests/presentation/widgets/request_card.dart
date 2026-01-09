@@ -10,10 +10,12 @@ class RequestCard extends StatelessWidget {
     super.key,
     required this.request,
     this.onTap,
+    this.action,
   });
 
   final RequestModel request;
   final VoidCallback? onTap;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) {
@@ -163,6 +165,13 @@ class RequestCard extends StatelessWidget {
                   ),
                 ],
               ),
+              if (action != null) ...[
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: action!,
+                ),
+              ],
             ],
           ),
         ),

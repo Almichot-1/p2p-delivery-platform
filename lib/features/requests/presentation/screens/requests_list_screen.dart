@@ -185,6 +185,7 @@ class _RequestsListScreenState extends State<RequestsListScreen> {
               ],
             ),
             floatingActionButton: FloatingActionButton.extended(
+              heroTag: 'requests_list_fab',
               onPressed: () => context.push(RoutePaths.requestsCreate),
               icon: const Icon(Icons.add),
               label: const Text('Create Request'),

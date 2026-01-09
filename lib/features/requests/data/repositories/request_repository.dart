@@ -85,6 +85,14 @@ class RequestRepository {
       throw Exception('You can upload up to 5 images');
     }
 
+    // Validate weight
+    if (request.weightKg <= 0) {
+      throw Exception('Weight must be greater than 0');
+    }
+    if (request.weightKg > 100) {
+      throw Exception('Weight cannot exceed 100 kg');
+    }
+
     _uploadProgressController.add(0);
 
     final docRef = _firebaseService.requests.doc();

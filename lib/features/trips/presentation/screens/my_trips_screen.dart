@@ -91,6 +91,7 @@ class MyTripsScreen extends StatelessWidget {
                 },
               ),
               floatingActionButton: FloatingActionButton.extended(
+                heroTag: 'my_trips_fab',
                 onPressed: () => context.push(RoutePaths.tripsCreate),
                 icon: const Icon(Icons.add),
                 label: const Text('Post Trip'),
