@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/core/constants/app_constants.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1768065928581,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1768065928581,
+            "name": "Commit-0",
+            "content": "class AppConstants {\r\n  static const String appName = 'YegnaConnect';\r\n  static const String appVersion = '0.1.0';\r\n\r\n  static const List<String> ethiopianCities = <String>[\r\n    'Addis Ababa',\r\n    'Dire Dawa',\r\n    'Bahir Dar',\r\n    'Gondar',\r\n    'Mekelle',\r\n    'Hawassa',\r\n    'Adama',\r\n    'Jimma',\r\n    'Dessie',\r\n    'Harar',\r\n  ];\r\n\r\n  static const List<String> internationalCities = <String>[\r\n    'Washington, DC',\r\n    'New York',\r\n    'Los Angeles',\r\n    'London',\r\n    'Manchester',\r\n    'Dubai',\r\n    'Abu Dhabi',\r\n    'Toronto',\r\n    'Vancouver',\r\n    'Berlin',\r\n    'Frankfurt',\r\n    'Amsterdam',\r\n    'Stockholm',\r\n    'Oslo',\r\n    'Paris',\r\n  ];\r\n\r\n  static const List<String> itemCategories = <String>[\r\n    'documents',\r\n    'electronics',\r\n    'clothing',\r\n    'food',\r\n    'medicine',\r\n    'gifts',\r\n    'other',\r\n  ];\r\n}\r\n"
+        }
+    ]
+}

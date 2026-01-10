@@ -484,7 +484,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
       children: [
         // Country dropdown
         DropdownButtonFormField<String>(
-          value: isFixed ? 'Ethiopia' : (country != null && _countries.contains(country) ? country : null),
+          initialValue: isFixed ? 'Ethiopia' : (country != null && _countries.contains(country) ? country : null),
           decoration: InputDecoration(
             labelText: isFixed ? 'Ethiopia' : 'Country *',
             border: const OutlineInputBorder(),
@@ -511,7 +511,7 @@ class _CreateTripScreenState extends State<CreateTripScreen> {
         // City - dropdown if cities available and not showing manual input
         if (cities.isNotEmpty && !showManualInput)
           DropdownButtonFormField<String>(
-            value: city != null && cities.contains(city) ? city : null,
+            initialValue: city != null && cities.contains(city) ? city : null,
             decoration: const InputDecoration(
               labelText: 'City *',
               border: OutlineInputBorder(),

@@ -21,11 +21,22 @@ class TripsListScreen extends StatefulWidget {
 class _TripsListScreenState extends State<TripsListScreen> {
   TripFilters _filters = const TripFilters();
 
+  DateTime? _effectiveAfterDate(TripFilters f) {
+    if (f.includePast) return f.afterDate;
+
+    final now = DateTime.now();
+    final today = DateTime(now.year, now.month, now.day);
+
+    final picked = f.afterDate;
+    if (picked == null) return today;
+    return picked.isAfter(today) ? picked : today;
+  }
+
   void _load(BuildContext blocContext) {
     blocContext.read<TripBloc>().add(
           TripsLoadRequested(
             destination: _filters.destinationCountry,
-            afterDate: _filters.afterDate,
+            afterDate: _effectiveAfterDate(_filters),
           ),
         );
   }
@@ -58,7 +69,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
         ..add(
           TripsLoadRequested(
             destination: _filters.destinationCountry,
-            afterDate: _filters.afterDate,
+            afterDate: _effectiveAfterDate(_filters),
           ),
         ),
       child: BlocConsumer<TripBloc, TripState>(
@@ -104,6 +115,7 @@ class _TripsListScreenState extends State<TripsListScreen> {
                                   _filters = TripFilters(
                                     destinationCountry: null,
                                     afterDate: _filters.afterDate,
+                                    includePast: _filters.includePast,
                                   );
                                 });
                                 _load(context);
@@ -119,6 +131,21 @@ class _TripsListScreenState extends State<TripsListScreen> {
                                   _filters = TripFilters(
                                     destinationCountry: _filters.destinationCountry,
                                     afterDate: null,
+                                    includePast: _filters.includePast,
+                                  );
+                                });
+                                _load(context);
+                              },
+                            ),
+                          if (_filters.includePast)
+                            InputChip(
+                              label: const Text('Including past trips'),
+                              onDeleted: () {
+                                setState(() {
+                                  _filters = TripFilters(
+                                    destinationCountry: _filters.destinationCountry,
+                                    afterDate: _filters.afterDate,
+                                    includePast: false,
                                   );
                                 });
                                 _load(context);

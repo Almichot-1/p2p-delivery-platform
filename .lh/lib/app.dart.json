@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/app.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1768067134795,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1768067714257,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -41,8 +41,10 @@\n     // In debug, we intentionally recreate the app subtree (and AuthBloc) on\r\n     // every hot reload so changes show up immediately.\r\n     if (!kDebugMode) return;\r\n \r\n+    debugPrint('###HOT_RELOAD### Rebuilding app subtree');\r\n+\r\n     configureDependencies();\r\n \r\n     unawaited(_authBloc.close());\r\n     _authBloc = GetIt.instance<AuthBloc>()..add(const AuthCheckRequested());\r\n"
+                }
+            ],
+            "date": 1768067134795,
+            "name": "Commit-0",
+            "content": "import 'dart:async';\r\n\r\nimport 'package:flutter/foundation.dart';\r\nimport 'package:flutter/material.dart';\r\nimport 'package:flutter_bloc/flutter_bloc.dart';\r\nimport 'package:get_it/get_it.dart';\r\n\r\nimport 'config/di.dart';\r\nimport 'config/routes.dart';\r\nimport 'core/constants/app_constants.dart';\r\nimport 'core/theme/app_theme.dart';\r\nimport 'features/auth/bloc/auth_bloc.dart';\r\nimport 'features/auth/bloc/auth_event.dart';\r\n\r\nclass DiasporaApp extends StatefulWidget {\r\n  const DiasporaApp({super.key});\r\n\r\n  @override\r\n  State<DiasporaApp> createState() => _DiasporaAppState();\r\n}\r\n\r\nclass _DiasporaAppState extends State<DiasporaApp> {\r\n  late AuthBloc _authBloc;\r\n  Key _appKey = UniqueKey();\r\n\r\n  @override\r\n  void initState() {\r\n    super.initState();\r\n    _authBloc = GetIt.instance<AuthBloc>();\r\n    _authBloc.add(const AuthCheckRequested());\r\n  }\r\n\r\n  @override\r\n  void reassemble() {\r\n    super.reassemble();\r\n\r\n    // Hot reload does not rerun `main()` or top-level initializers, and it does\r\n    // not rerun `initState()`. Many changes (DI wiring, init flows, routing)\r\n    // won't show up until Hot Restart.\r\n    //\r\n    // In debug, we intentionally recreate the app subtree (and AuthBloc) on\r\n    // every hot reload so changes show up immediately.\r\n    if (!kDebugMode) return;\r\n\r\n    configureDependencies();\r\n\r\n    unawaited(_authBloc.close());\r\n    _authBloc = GetIt.instance<AuthBloc>()..add(const AuthCheckRequested());\r\n\r\n    setState(() {\r\n      _appKey = UniqueKey();\r\n    });\r\n  }\r\n\r\n  @override\r\n  void dispose() {\r\n    unawaited(_authBloc.close());\r\n    super.dispose();\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return BlocProvider<AuthBloc>.value(\r\n      value: _authBloc,\r\n      child: MaterialApp.router(\r\n        key: _appKey,\r\n        debugShowCheckedModeBanner: false,\r\n        title: AppConstants.appName,\r\n        theme: AppTheme.light,\r\n        darkTheme: AppTheme.dark,\r\n        themeMode: ThemeMode.system,\r\n        routerConfig: AppRoutes.createRouter(_authBloc),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

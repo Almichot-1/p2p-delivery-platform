@@ -185,7 +185,14 @@ class TripModel extends Equatable {
 
   String get routeDisplay => '$_originLabel → $_destinationLabel';
 
-  bool get isUpcoming => departureDate.isAfter(DateTime.now());
+  DateTime get _startOfToday {
+    final now = DateTime.now();
+    return DateTime(now.year, now.month, now.day);
+  }
+
+  bool get isUpcoming => !departureDate.isBefore(_startOfToday);
+
+  bool get isPast => departureDate.isBefore(_startOfToday);
 
   @override
   List<Object?> get props => <Object?>[

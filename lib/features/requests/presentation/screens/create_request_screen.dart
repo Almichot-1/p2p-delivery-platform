@@ -13,6 +13,9 @@ import '../../bloc/request_bloc.dart';
 import '../../bloc/request_event.dart';
 import '../../bloc/request_state.dart';
 import '../../data/models/request_model.dart';
+import '../../../matches/bloc/match_bloc.dart';
+import '../../../matches/bloc/match_event.dart';
+import '../../../matches/bloc/match_state.dart';
 import '../widgets/image_picker_grid.dart';
 
 /// Data class to pass trip info when creating request from a trip
@@ -93,6 +96,8 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   final _recipientNameCtrl = TextEditingController();
   final _recipientPhoneCtrl = TextEditingController();
 
+  bool _autoFilledRecipientForTrip = false;
+
   // Optional
   DateTime? _preferredDeliveryDate;
   final _offeredPriceCtrl = TextEditingController();
@@ -105,6 +110,13 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   bool get _isFromTrip => widget.fromTrip != null;
   TripModel? get _linkedTrip => widget.fromTrip?.trip;
   List<String> get _countries => _countryCities.keys.toList();
+
+  bool get _tripAllowsContact {
+    if (!_isFromTrip) return true;
+    final trip = _linkedTrip;
+    if (trip == null) return false;
+    return trip.isUpcoming;
+  }
 
   List<String> _getCities(String? country) {
     if (country == null || country == 'Other') return [];
@@ -141,7 +153,22 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
       _deliveryCountry = trip.destinationCountry;
       _deliveryCity = trip.destinationCity;
       _deliveryCityCtrl.text = trip.destinationCity;
-      _preferredDeliveryDate = trip.departureDate;
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+
+    // In "contact traveler" flow we only ask for item info.
+    // Recipient name/phone are auto-filled from the current profile.
+    if (_isFromTrip && !_autoFilledRecipientForTrip) {
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        _recipientNameCtrl.text = authState.user.fullName;
+        _recipientPhoneCtrl.text = authState.user.phone?.trim() ?? '';
+      }
+      _autoFilledRecipientForTrip = true;
     }
   }
 
@@ -186,6 +213,12 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
   }
 
   void _submit(BuildContext blocContext) {
+    if (!_tripAllowsContact) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('This trip has already passed. Please choose an upcoming trip.')),
+      );
+      return;
+    }
     if (!_formKey.currentState!.validate()) return;
     if (_category == null) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -222,6 +255,11 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         : double.tryParse(_offeredPriceCtrl.text.trim());
     final now = DateTime.now();
     final user = authState.user;
+
+    final recipientName = _isFromTrip ? user.fullName : _recipientNameCtrl.text.trim();
+    final recipientPhone = _isFromTrip
+      ? ((user.phone?.trim().isNotEmpty ?? false) ? user.phone!.trim() : 'N/A')
+      : _recipientPhoneCtrl.text.trim();
 
     if (_isEdit) {
       final updated = widget.existing!.copyWith(
@@ -262,9 +300,9 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
         deliveryCity: deliveryCity,
         deliveryCountry: deliveryCountry,
         deliveryAddress: deliveryCity,
-        recipientName: _recipientNameCtrl.text.trim(),
-        recipientPhone: _recipientPhoneCtrl.text.trim(),
-        preferredDeliveryDate: _preferredDeliveryDate,
+        recipientName: recipientName,
+        recipientPhone: recipientPhone,
+        preferredDeliveryDate: _isFromTrip ? null : _preferredDeliveryDate,
         offeredPrice: price,
         isUrgent: _isUrgent,
         status: RequestStatus.active,
@@ -277,24 +315,85 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<RequestBloc>(
-      create: (_) => GetIt.instance<RequestBloc>(),
-      child: BlocConsumer<RequestBloc, RequestState>(
-        listenWhen: (_, s) => s is RequestCreated || s is RequestUpdated || s is RequestError,
-        listener: (context, state) {
-          if (state is RequestError) {
-            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
-          }
-          if (state is RequestCreated || state is RequestUpdated) {
-            context.pop();
-          }
-        },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<RequestBloc>(create: (_) => GetIt.instance<RequestBloc>()),
+        BlocProvider<MatchBloc>(create: (_) => GetIt.instance<MatchBloc>()),
+      ],
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<RequestBloc, RequestState>(
+            listenWhen: (_, s) => s is RequestCreated || s is RequestUpdated || s is RequestError,
+            listener: (context, state) {
+              if (state is RequestError) {
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.message)));
+              }
+              if (state is RequestCreated) {
+                if (_isFromTrip && _linkedTrip != null) {
+                  // If from trip, we now proceed to create the match
+                  final trip = _linkedTrip!;
+                  final authState = context.read<AuthBloc>().state;
+                  if (authState is AuthAuthenticated) {
+                    final currentUser = authState.user;
+                    final itemTitle = _titleCtrl.text.trim();
+                    
+                    context.read<MatchBloc>().add(
+                      MatchCreateRequested(
+                        tripId: trip.id,
+                        requestId: state.requestId,
+                        travelerId: trip.travelerId,
+                        travelerName: trip.travelerName,
+                        travelerPhoto: trip.travelerPhoto,
+                        requesterId: currentUser.uid,
+                        requesterName: currentUser.fullName,
+                        requesterPhoto: currentUser.photoUrl,
+                        itemTitle: itemTitle,
+                        route: trip.routeDisplay,
+                        tripDate: trip.departureDate,
+                      ),
+                    );
+                  }
+                } else {
+                  // Normal flow
+                  context.pop();
+                }
+              }
+              if (state is RequestUpdated) {
+                context.pop();
+              }
+            },
+          ),
+          BlocListener<MatchBloc, MatchState>(
+            listener: (context, state) {
+              if (state is MatchCreated) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Request created and match sent to traveler!')),
+                );
+                // Return to trip details (or pop twice to go back further? For now just pop)
+                context.pop();
+              }
+              if (state is MatchError) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Request created but match failed: ${state.message}')),
+                );
+                context.pop(); 
+              }
+            },
+          ),
+        ],
+        child: BlocBuilder<RequestBloc, RequestState>(
         builder: (context, state) {
           final submitting = state is RequestCreating;
           final progress = state is RequestCreating ? state.uploadProgress : null;
 
           return Scaffold(
-            appBar: AppBar(title: Text(_isEdit ? 'Edit Request' : 'Send Item')),
+            appBar: AppBar(
+              title: Text(
+                _isEdit
+                    ? 'Edit Request'
+                    : (_isFromTrip ? 'Contact Traveler' : 'Send Item'),
+              ),
+            ),
             body: Column(
               children: [
                 if (submitting && progress != null)
@@ -305,6 +404,60 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                     child: ListView(
                       padding: const EdgeInsets.all(16),
                       children: [
+                        if (_isFromTrip) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.primaryContainer.withAlpha((0.3 * 255).round()),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(color: Theme.of(context).colorScheme.primary.withAlpha((0.3 * 255).round()))
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.info_outline, size: 20),
+                                const SizedBox(width: 8),
+                                Expanded(child: Text(
+                                  'Only item info is required. Pickup and delivery cities are taken from the selected trip.',
+                                  style: Theme.of(context).textTheme.bodySmall,
+                                )),
+                              ],
+                            ),
+                          ),
+                          if (!_tripAllowsContact) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).colorScheme.errorContainer.withAlpha((0.35 * 255).round()),
+                                borderRadius: BorderRadius.circular(8),
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.error.withAlpha((0.35 * 255).round()),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(Icons.block, size: 20, color: Theme.of(context).colorScheme.error),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      'This trip is no longer available (date already passed). You can’t contact the traveler for this trip.',
+                                      style: Theme.of(context).textTheme.bodySmall,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                          const SizedBox(height: 16),
+
+                          Text('Trip Route', style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 12),
+                          _buildLockedLocation(_pickupCity, _pickupCountry, labelText: 'Pickup (from trip)'),
+                          const SizedBox(height: 12),
+                          _buildLockedLocation(_deliveryCity, _deliveryCountry, labelText: 'Delivery (from trip)'),
+                          const SizedBox(height: 20),
+                        ],
+
                         // Item details
                         Text('What are you sending?', style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: 12),
@@ -322,7 +475,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           children: [
                             Expanded(
                               child: DropdownButtonFormField<RequestCategory>(
-                                value: _category,
+                                initialValue: _category,
                                 decoration: const InputDecoration(
                                   labelText: 'Category *',
                                   border: OutlineInputBorder(),
@@ -355,57 +508,61 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                         ),
                         const SizedBox(height: 20),
 
-                        // Pickup location
-                        Text('Pickup Location', style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 12),
-                        _buildLocationSection(
-                          isPickup: true,
-                          enabled: !submitting,
-                        ),
-                        const SizedBox(height: 20),
+                        // Pickup location - hidden when from trip
+                        if (!_isFromTrip) ...[
+                          Text('Pickup Location', style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 12),
+                          _buildLocationSection(
+                            isPickup: true,
+                            enabled: !submitting,
+                          ),
+                          const SizedBox(height: 20),
 
-                        // Delivery location
-                        Text('Delivery Location', style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 12),
-                        _buildLocationSection(
-                          isPickup: false,
-                          enabled: !submitting,
-                        ),
-                        const SizedBox(height: 20),
+                          // Delivery location
+                          Text('Delivery Location', style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 12),
+                          _buildLocationSection(
+                            isPickup: false,
+                            enabled: !submitting,
+                          ),
+                          const SizedBox(height: 20),
+                        ],
 
-                        // Recipient
-                        Text('Recipient', style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                controller: _recipientNameCtrl,
-                                decoration: const InputDecoration(
-                                  labelText: 'Name *',
-                                  border: OutlineInputBorder(),
+                        // Recipient - only required for full "Send Item" flow
+                        if (!_isFromTrip) ...[
+                          Text('Recipient', style: Theme.of(context).textTheme.titleMedium),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _recipientNameCtrl,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Name *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                                 ),
-                                validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: TextFormField(
-                                controller: _recipientPhoneCtrl,
-                                keyboardType: TextInputType.phone,
-                                decoration: const InputDecoration(
-                                  labelText: 'Phone *',
-                                  border: OutlineInputBorder(),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: TextFormField(
+                                  controller: _recipientPhoneCtrl,
+                                  keyboardType: TextInputType.phone,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Phone *',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                                 ),
-                                validator: (v) => v?.trim().isEmpty == true ? 'Required' : null,
                               ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 20),
+                            ],
+                          ),
+                          const SizedBox(height: 20),
+                        ],
 
-                        // Optional
-                        Text('Optional', style: Theme.of(context).textTheme.titleMedium),
+                        // Optional section - description always visible
+                        Text(_isFromTrip ? 'Additional Info' : 'Optional', style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: 12),
                         TextFormField(
                           controller: _descriptionCtrl,
@@ -415,32 +572,35 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                             border: OutlineInputBorder(),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        Row(
-                          children: [
-                            Expanded(
-                              child: OutlinedButton.icon(
-                                onPressed: submitting ? null : _pickDate,
-                                icon: const Icon(Icons.calendar_today, size: 18),
-                                label: Text(_preferredDeliveryDate == null
-                                    ? 'Delivery date'
-                                    : '${_preferredDeliveryDate!.day}/${_preferredDeliveryDate!.month}'),
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            SizedBox(
-                              width: 120,
-                              child: TextFormField(
-                                controller: _offeredPriceCtrl,
-                                keyboardType: TextInputType.number,
-                                decoration: const InputDecoration(
-                                  labelText: 'Price \$',
-                                  border: OutlineInputBorder(),
+                        // Date and price - hidden when from trip
+                        if (!_isFromTrip) ...[
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Expanded(
+                                child: OutlinedButton.icon(
+                                  onPressed: submitting ? null : _pickDate,
+                                  icon: const Icon(Icons.calendar_today, size: 18),
+                                  label: Text(_preferredDeliveryDate == null
+                                      ? 'Delivery date'
+                                      : '${_preferredDeliveryDate!.day}/${_preferredDeliveryDate!.month}'),
                                 ),
                               ),
-                            ),
-                          ],
-                        ),
+                              const SizedBox(width: 12),
+                              SizedBox(
+                                width: 120,
+                                child: TextFormField(
+                                  controller: _offeredPriceCtrl,
+                                  keyboardType: TextInputType.number,
+                                  decoration: const InputDecoration(
+                                    labelText: 'Price \$',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
                         const SizedBox(height: 8),
                         SwitchListTile(
                           value: _isUrgent,
@@ -465,10 +625,25 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
                           ),
                         const SizedBox(height: 24),
 
-                        FilledButton.icon(
-                          onPressed: submitting ? null : () => _submit(context),
-                          icon: const Icon(Icons.send),
-                          label: Text(_isEdit ? 'Save Changes' : 'Create Request'),
+                        BlocBuilder<MatchBloc, MatchState>(
+                          builder: (context, matchState) {
+                             final matchLoading = matchState is MatchCreating;
+                             return FilledButton.icon(
+                              onPressed: (submitting || matchLoading || !_tripAllowsContact)
+                                  ? null
+                                  : () => _submit(context),
+                              icon: const Icon(Icons.send),
+                              label: Text(
+                                _isEdit
+                                    ? 'Save Changes'
+                                    : (_isFromTrip
+                                        ? (!_tripAllowsContact
+                                            ? 'Trip ended'
+                                            : (matchLoading ? 'Sending...' : 'Send to Traveler'))
+                                        : 'Create Request'),
+                              ),
+                            ); 
+                          }
                         ),
                       ],
                     ),
@@ -478,6 +653,20 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
             ),
           );
         },
+      ),
+    ),
+    );
+  }
+
+  Widget _buildLockedLocation(String? city, String? country, {required String labelText}) {
+    return TextFormField(
+      initialValue: '$city, $country',
+      readOnly: true,
+      enabled: false,
+      decoration: InputDecoration(
+        labelText: labelText,
+        border: OutlineInputBorder(),
+        filled: true,
       ),
     );
   }
@@ -492,7 +681,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
     return Column(
       children: [
         DropdownButtonFormField<String>(
-          value: country != null && _countries.contains(country) ? country : null,
+          initialValue: country != null && _countries.contains(country) ? country : null,
           decoration: const InputDecoration(
             labelText: 'Country *',
             border: OutlineInputBorder(),
@@ -518,7 +707,7 @@ class _CreateRequestScreenState extends State<CreateRequestScreen> {
 
         if (cities.isNotEmpty && !showManualInput)
           DropdownButtonFormField<String>(
-            value: city != null && cities.contains(city) ? city : null,
+            initialValue: city != null && cities.contains(city) ? city : null,
             decoration: const InputDecoration(
               labelText: 'City *',
               border: OutlineInputBorder(),

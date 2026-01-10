@@ -1,5 +1,5 @@
 class AppConstants {
-  static const String appName = 'Diaspora Delivery';
+  static const String appName = 'YegnaConnect';
   static const String appVersion = '0.1.0';
 
   static const List<String> ethiopianCities = <String>[

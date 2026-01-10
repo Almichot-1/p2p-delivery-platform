@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 
 class TripFilters {
-  const TripFilters({this.destinationCountry, this.afterDate});
+  const TripFilters({
+    this.destinationCountry,
+    this.afterDate,
+    this.includePast = false,
+  });
 
   final String? destinationCountry;
   final DateTime? afterDate;
+  final bool includePast;
 
   bool get isEmpty =>
       (destinationCountry == null || destinationCountry!.trim().isEmpty) &&
-      afterDate == null;
+      afterDate == null &&
+      includePast == false;
 }
 
 class TripFilterSheet extends StatefulWidget {
@@ -55,6 +61,7 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
 
   String? _destinationCountry;
   DateTime? _afterDate;
+  bool _includePast = false;
 
   @override
   void initState() {
@@ -65,6 +72,7 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
             ? existing
             : null;
     _afterDate = widget.initial.afterDate;
+    _includePast = widget.initial.includePast;
   }
 
   @override
@@ -75,7 +83,7 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
     final picked = await showDatePicker(
       context: context,
       initialDate: _afterDate ?? now,
-      firstDate: DateTime(now.year, now.month, now.day),
+      firstDate: _includePast ? DateTime(2000) : DateTime(now.year, now.month, now.day),
       lastDate: DateTime(now.year + 2),
     );
 
@@ -87,6 +95,7 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
     setState(() {
       _destinationCountry = null;
       _afterDate = null;
+      _includePast = false;
     });
   }
 
@@ -126,6 +135,13 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
                   ? 'Departure date: Any'
                   : 'Departure after: ${_afterDate!.toLocal().toString().split(' ').first}'),
             ),
+            const SizedBox(height: 8),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('Include past trips'),
+              value: _includePast,
+              onChanged: (v) => setState(() => _includePast = v),
+            ),
             const SizedBox(height: 16),
             Row(
               children: [
@@ -143,6 +159,7 @@ class _TripFilterSheetState extends State<TripFilterSheet> {
                         TripFilters(
                           destinationCountry: _destinationCountry,
                           afterDate: _afterDate,
+                          includePast: _includePast,
                         ),
                       );
                       Navigator.of(context).pop();

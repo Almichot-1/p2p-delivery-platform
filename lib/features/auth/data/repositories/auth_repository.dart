@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../core/services/firebase_service.dart';
 import '../models/user_model.dart';
@@ -129,6 +130,65 @@ class AuthRepository {
       await _firebaseService.auth.sendPasswordResetEmail(email: email.trim());
     } on FirebaseAuthException catch (e) {
       throw Exception(_friendlyAuthError(e));
+    }
+  }
+
+  Future<UserModel> signInWithGoogle() async {
+    try {
+      final googleSignIn = GoogleSignIn(scopes: const ['email']);
+      final account = await googleSignIn.signIn();
+      if (account == null) {
+        throw Exception('Google sign-in cancelled');
+      }
+
+      final auth = await account.authentication;
+      final credential = GoogleAuthProvider.credential(
+        accessToken: auth.accessToken,
+        idToken: auth.idToken,
+      );
+
+      final cred = await _firebaseService.auth.signInWithCredential(credential);
+      final user = cred.user;
+      if (user == null) {
+        throw Exception('Google sign-in failed: user is null');
+      }
+
+      // Ensure profile exists.
+      final displayName = (user.displayName ?? '').trim();
+      final email = (user.email ?? '').trim();
+      final fallbackName = email.isNotEmpty ? email.split('@').first : 'User';
+
+      final data = <String, dynamic>{
+        'uid': user.uid,
+        'email': email.isNotEmpty ? email : null,
+        'phone': (user.phoneNumber ?? '').trim().isEmpty ? null : user.phoneNumber,
+        'fullName': displayName.isNotEmpty ? displayName : fallbackName,
+        'photoUrl': (user.photoURL ?? '').trim().isEmpty ? null : user.photoURL,
+        'role': UserRole.requester.name,
+        'verified': false,
+        'rating': 0.0,
+        'totalReviews': 0,
+        'completedDeliveries': 0,
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastActiveAt': FieldValue.serverTimestamp(),
+      }..removeWhere((key, value) => value == null);
+
+      await _firebaseService.users.doc(user.uid).set(
+            data,
+            SetOptions(merge: true),
+          );
+
+      final model = await getUserById(user.uid);
+      if (model == null) {
+        throw Exception('Google sign-in succeeded but profile missing');
+      }
+      return model;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(_friendlyAuthError(e));
+    } on Exception {
+      rethrow;
+    } catch (e) {
+      throw Exception(e.toString());
     }
   }
 

@@ -119,6 +119,58 @@ class _LoginScreenState extends State<LoginScreen> {
                       );
                     },
                   ),
+                  const SizedBox(height: 14),
+                  Row(
+                    children: [
+                      const Expanded(child: Divider()),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
+                        child: Text(
+                          'or',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ),
+                      const Expanded(child: Divider()),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      final loading = state is AuthLoading;
+                      return OutlinedButton(
+                        onPressed: loading
+                            ? null
+                            : () => context.read<AuthBloc>().add(
+                                  const AuthGoogleSignInRequested(),
+                                ),
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 22,
+                              height: 22,
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Theme.of(context).colorScheme.outline,
+                                ),
+                              ),
+                              child: const Text(
+                                'G',
+                                style: TextStyle(fontWeight: FontWeight.w800),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                            const Text('Continue with Google'),
+                          ],
+                        ),
+                      );
+                    },
+                  ),
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,

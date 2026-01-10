@@ -50,3 +50,7 @@ class AuthForgotPasswordRequested extends AuthEvent {
   @override
   List<Object?> get props => <Object?>[email];
 }
+
+class AuthGoogleSignInRequested extends AuthEvent {
+  const AuthGoogleSignInRequested();
+}

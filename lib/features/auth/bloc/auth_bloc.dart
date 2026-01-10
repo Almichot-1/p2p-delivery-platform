@@ -14,6 +14,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheckRequested>(_onCheckRequested);
     on<AuthLoginRequested>(_onLoginRequested);
     on<AuthRegisterRequested>(_onRegisterRequested);
+    on<AuthGoogleSignInRequested>(_onGoogleSignInRequested);
     on<AuthLogoutRequested>(_onLogoutRequested);
     on<AuthForgotPasswordRequested>(_onForgotPasswordRequested);
 
@@ -83,6 +84,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         event.fullName,
         event.phone,
       );
+      emit(AuthAuthenticated(user));
+    } catch (e) {
+      emit(AuthError(e.toString().replaceFirst('Exception: ', '')));
+      emit(const AuthUnauthenticated());
+    }
+  }
+
+  Future<void> _onGoogleSignInRequested(
+    AuthGoogleSignInRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(const AuthLoading());
+    try {
+      final user = await _authRepository.signInWithGoogle();
       emit(AuthAuthenticated(user));
     } catch (e) {
       emit(AuthError(e.toString().replaceFirst('Exception: ', '')));

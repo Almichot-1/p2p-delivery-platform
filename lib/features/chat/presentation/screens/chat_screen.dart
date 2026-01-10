@@ -8,8 +8,6 @@ import 'package:intl/intl.dart';
 import '../../../../core/services/cloudinary_service.dart';
 import '../../../../core/services/firebase_service.dart';
 import '../../../../core/widgets/cached_image.dart';
-import '../../../auth/bloc/auth_bloc.dart';
-import '../../../auth/bloc/auth_state.dart';
 import '../../../matches/bloc/match_bloc.dart';
 import '../../../matches/bloc/match_event.dart';
 import '../../../matches/bloc/match_state.dart';

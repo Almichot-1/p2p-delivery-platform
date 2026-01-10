@@ -95,7 +95,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
         // Notify requester that their match was accepted
         final match = _lastMatch;
         if (match != null && _notificationRepository != null) {
-          await _notificationRepository!.notifyMatchAccepted(
+          await _notificationRepository.notifyMatchAccepted(
             recipientId: match.requesterId,
             matchId: match.id,
             accepterName: match.travelerName,
@@ -120,7 +120,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
       onSuccess: () async {
         // Notify requester that their match was rejected
         if (matchBefore != null && _notificationRepository != null) {
-          await _notificationRepository!.notifyMatchRejected(
+          await _notificationRepository.notifyMatchRejected(
             recipientId: matchBefore.requesterId,
             matchId: matchBefore.id,
             rejecterName: matchBefore.travelerName,
@@ -165,14 +165,14 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
         final match = _lastMatch;
         if (match != null && _notificationRepository != null) {
           // Notify requester
-          await _notificationRepository!.notifyStatusUpdate(
+          await _notificationRepository.notifyStatusUpdate(
             recipientId: match.requesterId,
             matchId: match.id,
             status: event.status.name,
             itemTitle: match.itemTitle,
           );
           // Notify traveler (if status changed by requester)
-          await _notificationRepository!.notifyStatusUpdate(
+          await _notificationRepository.notifyStatusUpdate(
             recipientId: match.travelerId,
             matchId: match.id,
             status: event.status.name,
@@ -240,7 +240,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
       // Send notification to the traveler about the new match request
       if (_notificationRepository != null) {
         try {
-          await _notificationRepository!.notifyMatchRequest(
+          await _notificationRepository.notifyMatchRequest(
             recipientId: event.travelerId,
             matchId: id,
             senderName: event.requesterName,
@@ -302,7 +302,7 @@ class MatchBloc extends Bloc<MatchEvent, MatchState> {
       // Send system message if provided and chat repository is available
       if (matchId != null && systemMessage != null && _chatRepository != null) {
         try {
-          await _chatRepository!.sendSystemMessage(
+          await _chatRepository.sendSystemMessage(
             matchId: matchId,
             content: systemMessage,
           );

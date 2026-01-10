@@ -1,0 +1,18 @@
+{
+    "sourceFile": "lib/features/auth/bloc/auth_event.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 0,
+            "patches": [
+                {
+                    "date": 1768062447282,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                }
+            ],
+            "date": 1768062447282,
+            "name": "Commit-0",
+            "content": "import 'package:equatable/equatable.dart';\r\n\r\nabstract class AuthEvent extends Equatable {\r\n  const AuthEvent();\r\n\r\n  @override\r\n  List<Object?> get props => const [];\r\n}\r\n\r\nclass AuthCheckRequested extends AuthEvent {\r\n  const AuthCheckRequested();\r\n}\r\n\r\nclass AuthLoginRequested extends AuthEvent {\r\n  const AuthLoginRequested({required this.email, required this.password});\r\n\r\n  final String email;\r\n  final String password;\r\n\r\n  @override\r\n  List<Object?> get props => <Object?>[email, password];\r\n}\r\n\r\nclass AuthRegisterRequested extends AuthEvent {\r\n  const AuthRegisterRequested({\r\n    required this.email,\r\n    required this.password,\r\n    required this.fullName,\r\n    this.phone,\r\n  });\r\n\r\n  final String email;\r\n  final String password;\r\n  final String fullName;\r\n  final String? phone;\r\n\r\n  @override\r\n  List<Object?> get props => <Object?>[email, password, fullName, phone];\r\n}\r\n\r\nclass AuthLogoutRequested extends AuthEvent {\r\n  const AuthLogoutRequested();\r\n}\r\n\r\nclass AuthForgotPasswordRequested extends AuthEvent {\r\n  const AuthForgotPasswordRequested({required this.email});\r\n\r\n  final String email;\r\n\r\n  @override\r\n  List<Object?> get props => <Object?>[email];\r\n}\r\n\r\nclass AuthGoogleSignInRequested extends AuthEvent {\r\n  const AuthGoogleSignInRequested();\r\n}\r\n"
+        }
+    ]
+}

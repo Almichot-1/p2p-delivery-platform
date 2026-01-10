@@ -8,6 +8,7 @@ import '../../../../config/routes.dart';
 import '../../../auth/bloc/auth_bloc.dart';
 import '../../../auth/bloc/auth_state.dart';
 import '../../../../core/widgets/cached_image.dart';
+import '../../../requests/presentation/screens/create_request_screen.dart';
 import '../../bloc/trip_bloc.dart';
 import '../../bloc/trip_event.dart';
 import '../../bloc/trip_state.dart';
@@ -100,7 +101,7 @@ class _TripDetailsBody extends StatelessWidget {
           SliverAppBar(
             pinned: true,
             expandedHeight: 180,
-            title: Text(trip.routeDisplay),
+            title: Text('${trip.originCountry} → ${trip.destinationCountry}'),
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -112,15 +113,46 @@ class _TripDetailsBody extends StatelessWidget {
                 ),
                 alignment: Alignment.bottomLeft,
                 padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-                child: Row(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    _StatusBadge(status: trip.status),
-                    const SizedBox(width: 10),
-                    Text(
-                      trip.routeDisplay,
-                      style: theme.textTheme.titleLarge?.copyWith(
-                        color: scheme.onPrimary,
-                      ),
+                    Row(
+                      children: [
+                        _StatusBadge(status: trip.status),
+                        const SizedBox(width: 10),
+                        Text(
+                          'Trip route',
+                          style: theme.textTheme.labelLarge?.copyWith(
+                            color: scheme.onPrimary.withAlpha((0.9 * 255).round()),
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: _HeaderLocationStack(
+                            country: trip.originCountry,
+                            city: trip.originCity,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          child: Icon(
+                            Icons.arrow_forward,
+                            size: 20,
+                            color: scheme.onPrimary.withAlpha((0.9 * 255).round()),
+                          ),
+                        ),
+                        Expanded(
+                          child: _HeaderLocationStack(
+                            country: trip.destinationCountry,
+                            city: trip.destinationCity,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -185,9 +217,7 @@ class _TripDetailsBody extends StatelessWidget {
                           ),
                           IconButton(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Traveler profile (coming soon)')),
-                              );
+                              context.push('/profile/${trip.travelerId}');
                             },
                             icon: const Icon(Icons.chevron_right),
                             tooltip: 'View profile',
@@ -273,43 +303,65 @@ class _TripDetailsBody extends StatelessWidget {
                   ],
                   const SizedBox(height: 12),
                   if (!isOwner)
-                    FilledButton.icon(
-                      onPressed: () {
-                        // To contact a traveler, user needs to have a request first
-                        // Navigate to create a request or show info
-                        showDialog(
-                          context: context,
-                          builder: (ctx) => AlertDialog(
-                            title: const Text('Contact Traveler'),
-                            content: const Text(
-                              'To contact this traveler, you need to create a delivery request first. '
-                              'Once you have a request, you can match it with this trip and start chatting after the match is confirmed.',
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.pop(ctx),
-                                child: const Text('Cancel'),
-                              ),
-                              FilledButton(
-                                onPressed: () {
-                                  Navigator.pop(ctx);
-                                  context.push(RoutePaths.requestsCreate);
-                                },
-                                child: const Text('Create Request'),
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                      icon: const Icon(Icons.chat_bubble_outline),
-                      label: const Text('Contact Traveler'),
-                    ),
+                      FilledButton.icon(
+                        onPressed: trip.isUpcoming
+                            ? () {
+                                // Pass the trip to pre-fill the request
+                                context.push(
+                                  RoutePaths.requestsCreate,
+                                  extra: CreateRequestFromTrip(trip: trip),
+                                );
+                              }
+                            : null,
+                        icon: const Icon(Icons.chat_bubble_outline),
+                        label: Text(trip.isUpcoming ? 'Contact Traveler' : 'Trip ended'),
+                      ),
                 ],
               ),
             ),
           ),
         ],
       ),
+    );
+  }
+}
+
+class _HeaderLocationStack extends StatelessWidget {
+  const _HeaderLocationStack({required this.country, required this.city});
+
+  final String country;
+  final String city;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    final countryText = country.trim().isEmpty ? '—' : country.trim();
+    final cityText = city.trim().isEmpty ? '—' : city.trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          countryText,
+          style: theme.textTheme.titleLarge?.copyWith(
+            color: scheme.onPrimary,
+            fontWeight: FontWeight.w700,
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          cityText,
+          style: theme.textTheme.bodyMedium?.copyWith(
+            color: scheme.onPrimary.withAlpha((0.9 * 255).round()),
+          ),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

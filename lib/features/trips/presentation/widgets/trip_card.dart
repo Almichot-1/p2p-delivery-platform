@@ -73,15 +73,34 @@ class TripCard extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Icon(Icons.flight_takeoff, color: scheme.primary),
                   const SizedBox(width: 8),
                   Expanded(
-                    child: Text(
-                      trip.routeDisplay,
-                      style: theme.textTheme.titleMedium,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: _LocationStack(
+                            country: trip.originCountry,
+                            city: trip.originCity,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: Icon(
+                            Icons.arrow_forward,
+                            size: 18,
+                            color: scheme.onSurfaceVariant,
+                          ),
+                        ),
+                        Expanded(
+                          child: _LocationStack(
+                            country: trip.destinationCountry,
+                            city: trip.destinationCity,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -160,6 +179,41 @@ class _InfoPill extends StatelessWidget {
           Text(text, style: theme.textTheme.bodySmall),
         ],
       ),
+    );
+  }
+}
+
+class _LocationStack extends StatelessWidget {
+  const _LocationStack({required this.country, required this.city});
+
+  final String country;
+  final String city;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
+
+    final countryText = country.trim().isEmpty ? '—' : country.trim();
+    final cityText = city.trim().isEmpty ? '—' : city.trim();
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          countryText,
+          style: theme.textTheme.titleSmall,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+        const SizedBox(height: 2),
+        Text(
+          cityText,
+          style: theme.textTheme.bodySmall?.copyWith(color: scheme.onSurfaceVariant),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      ],
     );
   }
 }

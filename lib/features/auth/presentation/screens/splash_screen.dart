@@ -16,6 +16,8 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
 
+  static const String _appIconAsset = 'assets/icon/app_icon.png';
+
   @override
   void initState() {
     super.initState();
@@ -52,11 +54,18 @@ class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderSt
               children: [
                 ScaleTransition(
                   scale: Tween<double>(begin: 0.92, end: 1.0).animate(_controller),
-                  child: const Icon(Icons.flight_takeoff, size: 72),
+                  child: Image.asset(
+                    _appIconAsset,
+                    width: 96,
+                    height: 96,
+                    errorBuilder: (context, error, stackTrace) {
+                      return const Icon(Icons.public, size: 96);
+                    },
+                  ),
                 ),
                 const SizedBox(height: 12),
                 Text(
-                  'Diaspora Delivery',
+                  'YegnaConnect',
                   style: Theme.of(context).textTheme.headlineSmall,
                 ),
                 const SizedBox(height: 6),

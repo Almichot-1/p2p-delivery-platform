@@ -21,72 +21,107 @@ final GetIt getIt = GetIt.instance;
 
 void configureDependencies() {
   // Core services
-  getIt.registerLazySingleton<FirebaseService>(() => FirebaseService.instance);
-  getIt.registerLazySingleton<CloudinaryService>(
-      () => CloudinaryService.instance);
+  if (!getIt.isRegistered<FirebaseService>()) {
+    getIt.registerLazySingleton<FirebaseService>(() => FirebaseService.instance);
+  }
+  if (!getIt.isRegistered<CloudinaryService>()) {
+    getIt.registerLazySingleton<CloudinaryService>(() => CloudinaryService.instance);
+  }
 
   // Auth
-  getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepository(firebaseService: getIt<FirebaseService>()),
-  );
-  getIt.registerFactory<AuthBloc>(
-    () => AuthBloc(authRepository: getIt<AuthRepository>()),
-  );
+  if (!getIt.isRegistered<AuthRepository>()) {
+    getIt.registerLazySingleton<AuthRepository>(
+      () => AuthRepository(firebaseService: getIt<FirebaseService>()),
+    );
+  }
+  if (!getIt.isRegistered<AuthBloc>()) {
+    getIt.registerFactory<AuthBloc>(
+      () => AuthBloc(authRepository: getIt<AuthRepository>()),
+    );
+  }
 
   // Profile
-  getIt.registerLazySingleton<ProfileRepository>(
-    () =>
-        ProfileRepository(getIt<FirebaseService>(), getIt<CloudinaryService>()),
-  );
-  getIt.registerFactory<ProfileBloc>(
-    () => ProfileBloc(profileRepository: getIt<ProfileRepository>()),
-  );
+  if (!getIt.isRegistered<ProfileRepository>()) {
+    getIt.registerLazySingleton<ProfileRepository>(
+      () => ProfileRepository(
+        getIt<FirebaseService>(),
+        getIt<CloudinaryService>(),
+      ),
+    );
+  }
+  if (!getIt.isRegistered<ProfileBloc>()) {
+    getIt.registerFactory<ProfileBloc>(
+      () => ProfileBloc(profileRepository: getIt<ProfileRepository>()),
+    );
+  }
 
   // Trips
-  getIt.registerLazySingleton<TripRepository>(
-    () => TripRepository(getIt<FirebaseService>()),
-  );
-  getIt.registerFactory<TripBloc>(
-    () => TripBloc(tripRepository: getIt<TripRepository>()),
-  );
+  if (!getIt.isRegistered<TripRepository>()) {
+    getIt.registerLazySingleton<TripRepository>(
+      () => TripRepository(getIt<FirebaseService>()),
+    );
+  }
+  if (!getIt.isRegistered<TripBloc>()) {
+    getIt.registerFactory<TripBloc>(
+      () => TripBloc(tripRepository: getIt<TripRepository>()),
+    );
+  }
 
   // Requests
-  getIt.registerLazySingleton<RequestRepository>(
-    () =>
-        RequestRepository(getIt<FirebaseService>(), getIt<CloudinaryService>()),
-  );
-  getIt.registerFactory<RequestBloc>(
-    () => RequestBloc(requestRepository: getIt<RequestRepository>()),
-  );
+  if (!getIt.isRegistered<RequestRepository>()) {
+    getIt.registerLazySingleton<RequestRepository>(
+      () => RequestRepository(
+        getIt<FirebaseService>(),
+        getIt<CloudinaryService>(),
+      ),
+    );
+  }
+  if (!getIt.isRegistered<RequestBloc>()) {
+    getIt.registerFactory<RequestBloc>(
+      () => RequestBloc(requestRepository: getIt<RequestRepository>()),
+    );
+  }
 
   // Chat (registered before Matches since MatchBloc depends on ChatRepository)
-  getIt.registerLazySingleton<ChatRepository>(
-    () => ChatRepository(getIt<FirebaseService>(), getIt<CloudinaryService>()),
-  );
-  getIt.registerFactory<ChatBloc>(
-    () => ChatBloc(
-      chatRepository: getIt<ChatRepository>(),
-      firebaseService: getIt<FirebaseService>(),
-    ),
-  );
+  if (!getIt.isRegistered<ChatRepository>()) {
+    getIt.registerLazySingleton<ChatRepository>(
+      () => ChatRepository(getIt<FirebaseService>(), getIt<CloudinaryService>()),
+    );
+  }
+  if (!getIt.isRegistered<ChatBloc>()) {
+    getIt.registerFactory<ChatBloc>(
+      () => ChatBloc(
+        chatRepository: getIt<ChatRepository>(),
+        firebaseService: getIt<FirebaseService>(),
+      ),
+    );
+  }
 
   // Matches
-  getIt.registerLazySingleton<MatchRepository>(
-    () => MatchRepository(getIt<FirebaseService>()),
-  );
-  getIt.registerFactory<MatchBloc>(
-    () => MatchBloc(
-      matchRepository: getIt<MatchRepository>(),
-      chatRepository: getIt<ChatRepository>(),
-      notificationRepository: getIt<NotificationRepository>(),
-    ),
-  );
+  if (!getIt.isRegistered<MatchRepository>()) {
+    getIt.registerLazySingleton<MatchRepository>(
+      () => MatchRepository(getIt<FirebaseService>()),
+    );
+  }
+  if (!getIt.isRegistered<MatchBloc>()) {
+    getIt.registerFactory<MatchBloc>(
+      () => MatchBloc(
+        matchRepository: getIt<MatchRepository>(),
+        chatRepository: getIt<ChatRepository>(),
+        notificationRepository: getIt<NotificationRepository>(),
+      ),
+    );
+  }
 
   // Notifications
-  getIt.registerLazySingleton<NotificationRepository>(
-    () => NotificationRepository(getIt<FirebaseService>()),
-  );
-  getIt.registerFactory<NotificationBloc>(
-    () => NotificationBloc(getIt<NotificationRepository>()),
-  );
+  if (!getIt.isRegistered<NotificationRepository>()) {
+    getIt.registerLazySingleton<NotificationRepository>(
+      () => NotificationRepository(getIt<FirebaseService>()),
+    );
+  }
+  if (!getIt.isRegistered<NotificationBloc>()) {
+    getIt.registerFactory<NotificationBloc>(
+      () => NotificationBloc(getIt<NotificationRepository>()),
+    );
+  }
 }

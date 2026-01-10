@@ -12,7 +12,20 @@
           "package_name": "com.diaspora.delivery.diaspora_delivery"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "295209906788-ldtmfrqbhu7a6tdodrpq95jvolkggsvq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.diaspora.delivery.diaspora_delivery",
+            "certificate_hash": "e1e29cae39822efdf59097093da83b463bda903b"
+          }
+        },
+        {
+          "client_id": "295209906788-s8vjlehduaj10tqunf6fp077m8388305.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAtEYCm-8_LmolO-63QIVvig4UpHLnx3N8"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "295209906788-s8vjlehduaj10tqunf6fp077m8388305.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

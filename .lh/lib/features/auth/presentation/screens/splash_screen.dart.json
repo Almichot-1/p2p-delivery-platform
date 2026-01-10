@@ -1,0 +1,22 @@
+{
+    "sourceFile": "lib/features/auth/presentation/screens/splash_screen.dart",
+    "activeCommit": 0,
+    "commits": [
+        {
+            "activePatchIndex": 1,
+            "patches": [
+                {
+                    "date": 1768065764172,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n"
+                },
+                {
+                    "date": 1768067328168,
+                    "content": "Index: \n===================================================================\n--- \n+++ \n@@ -57,8 +57,11 @@\n                   child: Image.asset(\r\n                     _appIconAsset,\r\n                     width: 96,\r\n                     height: 96,\r\n+                    errorBuilder: (context, error, stackTrace) {\r\n+                      return const Icon(Icons.public, size: 96);\r\n+                    },\r\n                   ),\r\n                 ),\r\n                 const SizedBox(height: 12),\r\n                 Text(\r\n"
+                }
+            ],
+            "date": 1768065764172,
+            "name": "Commit-0",
+            "content": "import 'package:flutter/material.dart';\r\nimport 'package:flutter_bloc/flutter_bloc.dart';\r\nimport 'package:go_router/go_router.dart';\r\n\r\nimport '../../../../config/routes.dart';\r\nimport '../../bloc/auth_bloc.dart';\r\nimport '../../bloc/auth_state.dart';\r\n\r\nclass SplashScreen extends StatefulWidget {\r\n  const SplashScreen({super.key});\r\n\r\n  @override\r\n  State<SplashScreen> createState() => _SplashScreenState();\r\n}\r\n\r\nclass _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {\r\n  late final AnimationController _controller;\r\n\r\n  static const String _appIconAsset = 'assets/icon/app_icon.png';\r\n\r\n  @override\r\n  void initState() {\r\n    super.initState();\r\n    _controller = AnimationController(\r\n      vsync: this,\r\n      duration: const Duration(milliseconds: 900),\r\n    )..repeat(reverse: true);\r\n  }\r\n\r\n  @override\r\n  void dispose() {\r\n    _controller.dispose();\r\n    super.dispose();\r\n  }\r\n\r\n  @override\r\n  Widget build(BuildContext context) {\r\n    return BlocListener<AuthBloc, AuthState>(\r\n      listenWhen: (_, current) =>\r\n          current is AuthAuthenticated || current is AuthUnauthenticated,\r\n      listener: (context, state) {\r\n        if (state is AuthAuthenticated) {\r\n          context.go(RoutePaths.home);\r\n        } else if (state is AuthUnauthenticated) {\r\n          context.go(RoutePaths.onboarding);\r\n        }\r\n      },\r\n      child: Scaffold(\r\n        body: Center(\r\n          child: Padding(\r\n            padding: const EdgeInsets.all(24),\r\n            child: Column(\r\n              mainAxisSize: MainAxisSize.min,\r\n              children: [\r\n                ScaleTransition(\r\n                  scale: Tween<double>(begin: 0.92, end: 1.0).animate(_controller),\r\n                  child: Image.asset(\r\n                    _appIconAsset,\r\n                    width: 96,\r\n                    height: 96,\r\n                  ),\r\n                ),\r\n                const SizedBox(height: 12),\r\n                Text(\r\n                  'YegnaConnect',\r\n                  style: Theme.of(context).textTheme.headlineSmall,\r\n                ),\r\n                const SizedBox(height: 6),\r\n                Text(\r\n                  'Connecting Communities',\r\n                  style: Theme.of(context).textTheme.bodyMedium,\r\n                ),\r\n                const SizedBox(height: 20),\r\n                const SizedBox(\r\n                  height: 22,\r\n                  width: 22,\r\n                  child: CircularProgressIndicator(strokeWidth: 2),\r\n                ),\r\n              ],\r\n            ),\r\n          ),\r\n        ),\r\n      ),\r\n    );\r\n  }\r\n}\r\n"
+        }
+    ]
+}

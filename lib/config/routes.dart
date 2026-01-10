@@ -16,6 +16,7 @@ import '../features/home/presentation/screens/search_screen.dart';
 import '../features/notifications/presentation/screens/notifications_screen.dart';
 import '../features/profile/presentation/screens/edit_profile_screen.dart';
 import '../features/profile/presentation/screens/profile_screen.dart';
+import '../features/profile/presentation/screens/public_profile_screen.dart';
 import '../features/profile/presentation/screens/settings_screen.dart';
 import '../features/trips/presentation/screens/create_trip_screen.dart';
 import '../features/trips/presentation/screens/my_trips_screen.dart';
@@ -63,6 +64,7 @@ class RoutePaths {
   static const String home = '/home';
   static const String search = '/search';
   static const String profile = '/profile';
+  static const String publicProfile = '/profile/:uid';
   static const String profileEdit = '/profile/edit';
   static const String settings = '/settings';
   static const String notifications = '/notifications';
@@ -141,6 +143,13 @@ class AppRoutes {
           builder: (context, state) => const ProfileScreen(),
         ),
         GoRoute(
+          path: RoutePaths.publicProfile,
+          builder: (context, state) {
+            final uid = state.pathParameters['uid'] ?? '';
+            return PublicProfileScreen(uid: uid);
+          },
+        ),
+        GoRoute(
           path: RoutePaths.profileEdit,
           builder: (context, state) => const EditProfileScreen(),
         ),
@@ -197,7 +206,9 @@ class AppRoutes {
           builder: (context, state) {
             final existing = state.extra;
             return CreateRequestScreen(
-                existing: existing is RequestModel ? existing : null);
+              existing: existing is RequestModel ? existing : null,
+              fromTrip: existing is CreateRequestFromTrip ? existing : null,
+            );
           },
         ),
         GoRoute(
