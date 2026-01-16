@@ -2,8 +2,140 @@
 
 A Flutter-based peer-to-peer delivery marketplace that connects travelers with people who need items delivered. Travelers can monetize their extra luggage space while requesters get their items delivered affordably through trusted community members.
 
+## Final-Year Project Master Prompt (Copy-Paste)
+
+Use the following prompt with any AI agent (ChatGPT, Claude, Copilot, etc.) to generate a university-ready documentation package for this project.
+
+```text
+Role and Context
+You are a senior software engineer and academic project supervisor.
+Your task is to generate a complete final-year project documentation package suitable for university submission, including formal documentation, system analysis, design artifacts, and diagrams.
+
+The output must follow formal academic standards. It must be well-structured, clear, and technically correct.
+Avoid unnecessary verbosity, but ensure depth and completeness.
+
+1. Project Overview
+Generate:
+- Project Title
+- Problem Statement
+- Objectives (General and Specific)
+- Scope of the System
+- Target Users
+- Assumptions and Constraints
+
+2. Software Development Approach (SDA)
+Explain in detail:
+- Chosen SDLC model (Waterfall, Agile, Incremental)
+- Justification for choosing this model
+- Each phase of the SDLC as applied to this project:
+  - Requirements Analysis
+  - System Design
+  - Implementation
+  - Testing
+  - Deployment
+  - Maintenance
+
+3. Requirements Analysis
+3.1 Functional Requirements
+List and explain clearly (numbered).
+
+3.2 Non-Functional Requirements
+Include:
+- Performance
+- Security
+- Scalability
+- Usability
+- Reliability
+
+4. System Actors and Use Cases
+- Identify all system actors
+- Explain each actor’s role
+- Provide a Use Case List
+
+4.1 Use Case Diagram
+- Describe it clearly
+- Include PlantUML code for the diagram
+
+5. System Design
+5.1 High-Level Architecture
+- Describe system architecture (Client–Server, MVC, Layered)
+- Provide an Architecture Diagram (PlantUML)
+
+5.2 Database Design
+- Entity descriptions
+- Relationships
+- ER Diagram (PlantUML)
+
+6. UML Diagrams (Mandatory)
+Generate PlantUML code for:
+1) Use Case Diagram
+2) Class Diagram
+3) Sequence Diagram
+4) Activity Diagram
+5) Deployment Diagram
+
+For each diagram, include:
+- A short explanation
+- Correct UML notation
+
+7. Technology Stack
+Explain:
+- Frontend technology
+- Backend technology
+- Database
+- Tools and IDEs
+- Reason for choosing each
+
+8. Implementation Overview
+- System modules
+- Major classes and components
+- Data flow explanation
+Do not write full code unless explicitly asked.
+
+9. Testing Strategy
+Explain:
+- Unit Testing
+- Integration Testing
+- System Testing
+- Acceptance Testing
+Include a sample test case table.
+
+10. Security Considerations
+Explain:
+- Authentication
+- Authorization
+- Data validation
+- Data protection
+
+11. Limitations and Future Enhancements
+- Current system limitations
+- Possible future improvements
+
+12. Conclusion
+- Summary of the system
+- Achievements
+- Final remarks
+
+13. Documentation Style Rules
+- Formal academic language
+- Clear headings and subheadings
+- No casual language
+- Do not include phrases such as “as an AI model”
+
+14. Output Format
+- Markdown
+- Clearly separated sections
+- Diagrams written using PlantUML code blocks
+
+Before generating the content, ask only once for:
+- Project title or domain
+- Platform (Web, Mobile, Desktop)
+Then generate everything in one complete response.
+```
+
 ## Table of Contents
 
+- [Final-Year Project Master Prompt (Copy-Paste)](#final-year-project-master-prompt-copy-paste)
 - [Overview](#overview)
 - [Features](#features)
 - [Architecture](#architecture)
