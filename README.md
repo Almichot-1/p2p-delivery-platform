@@ -106,10 +106,10 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  UI[Presentation (Screens/Widgets)] --> SM[BLoC / Cubit]
-  SM --> S[Services / Repositories]
-  S --> SDK[(Firebase SDK)]
-  S --> CORE[Core (errors, utils, theme, shared widgets)]
+  UI["Presentation: Screens & Widgets"] --> SM["State: BLoC / Cubit"]
+  SM --> S["Services / Repositories"]
+  S --> SDK[("Firebase SDK")]
+  S --> CORE["Core: errors, utils, theme, shared widgets"]
 ```
 
 ### Domain model (simplified)
