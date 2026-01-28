@@ -337,23 +337,14 @@ Guiding principle: keep client access minimal via rules, and enforce privileged 
 
 ---
 
-## Roadmap (nice-to-have)
+## Roadmap 
 
 - CI (lint + tests) via GitHub Actions
 - Deep links + improved onboarding
 - More robust matching and dispute handling
 - Observability (structured logging) for Cloud Functions
 
----
 
-## Contributing
 
-- Keep changes scoped and add tests where practical.
-- Follow existing patterns for feature modules (`frontend/lib/features`).
-- Prefer running against the emulator suite for development.
 
----
 
-## License
-
-If you plan to publish this repository, add a LICENSE file and update this section.
