@@ -231,6 +231,51 @@ flutter run --dart-define=USE_FIREBASE_EMULATORS=true --dart-define=FIREBASE_EMU
 
 ---
 
+## Testing
+
+Flutter:
+
+```bash
+cd frontend
+flutter test
+```
+
+Cloud Functions:
+
+```bash
+cd firebase/functions
+npm test
+```
+
+---
+
+## Security (high level)
+
+- Firestore rules: `firebase/firestore.rules`
+- Storage rules: `firebase/storage.rules`
+
+Guiding principle: keep client access minimal via rules, and enforce privileged or cross-document logic in Cloud Functions.
+
+---
+
+## Repository layout
+
+```text
+.
+├─ frontend/                 Flutter app
+│  └─ lib/
+│     ├─ config/             routing + dependency injection
+│     ├─ core/               shared utilities/services/widgets
+│     └─ features/           feature modules (auth, chat, trips, ...)
+├─ firebase/                 Firebase config + rules + emulators
+│  ├─ functions/             Cloud Functions (Node.js 18)
+│  ├─ firestore.rules
+│  └─ storage.rules
+└─ docs/                     SRS/SDA and supporting documentation
+```
+
+---
+
 ## Documentation
 
 - Requirements + architecture: `docs/Diaspora_Peer_Delivery_SRS_SDA_v1.0.0.md`
