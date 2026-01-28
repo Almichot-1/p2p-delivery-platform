@@ -106,10 +106,10 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-  UI[Presentation (Screens/Widgets)] --> SM[BLoC / Cubit]
-  SM --> S[Services / Repositories]
-  S --> SDK[(Firebase SDK)]
-  S --> CORE[Core (errors, utils, theme, shared widgets)]
+  UI["Presentation\n(Screens & Widgets)"] --> SM["State\n(BLoC / Cubit)"]
+  SM --> S["Services\n(Repositories)"]
+  S --> SDK["Firebase SDK"]
+  S --> CORE["Core\n(errors, utils, theme, widgets)"]
 ```
 
 ### Domain model (simplified)
@@ -117,41 +117,43 @@ flowchart TB
 ```mermaid
 classDiagram
   class User {
-    +String id
-    +String role
+    id
+    role
   }
   class Trip {
-    +String id
-    +String travelerId
-    +String from
-    +String to
+    id
+    travelerId
+    from
+    to
   }
   class Request {
-    +String id
-    +String requesterId
-    +String status
+    id
+    requesterId
+    status
   }
   class Match {
-    +String id
-    +String tripId
-    +String requestId
-    +String status
+    id
+    tripId
+    requestId
+    status
   }
   class Chat {
-    +String id
+    id
   }
   class Message {
-    +String id
-    +String chatId
-    +String senderId
-    +String text
+    id
+    chatId
+    senderId
+    text
   }
 
-  User "1" --> "0..*" Trip : posts
-  User "1" --> "0..*" Request : creates
-  Trip "1" --> "0..*" Match
-  Request "1" --> "0..*" Match
-  Chat "1" --> "0..*" Message
+  User --> Trip : posts
+  User --> Request : creates
+  Trip --> Match
+  Request --> Match
+  Match --> Chat : negotiation
+  Chat --> Message
+  User --> Message : sends
 ```
 
 ### Example flow: request <-> trip coordination
