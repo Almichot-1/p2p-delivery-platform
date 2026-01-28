@@ -10,6 +10,24 @@ Senior-level Flutter + Firebase project: a peer-to-peer delivery platform that m
 
 </div>
 
+## Table of contents
+
+- [At a glance](#at-a-glance)
+- [What this repo contains](#what-this-repo-contains)
+- [Feature highlights](#feature-highlights)
+- [Demo / screenshots](#demo--screenshots)
+- [Tech stack](#tech-stack)
+- [Architecture](#architecture)
+- [Getting started](#getting-started)
+- [Testing](#testing)
+- [Security](#security-high-level)
+- [Deployment](#deployment-notes)
+- [Repository layout](#repository-layout)
+- [Documentation](#documentation)
+- [Roadmap](#roadmap-nice-to-have)
+- [Contributing](#contributing)
+- [License](#license)
+
 ## At a glance
 
 - **Problem:** International shipping is expensive and slow; travelers often have unused baggage capacity.
@@ -36,6 +54,12 @@ Senior-level Flutter + Firebase project: a peer-to-peer delivery platform that m
 | Chat | In-app messaging for coordination |
 | Notifications | Event-driven notifications |
 | Media uploads | Images/files stored via Firebase Storage |
+
+Engineering notes:
+
+- Uses **Firebase Emulator Suite** for fast, safe local development.
+- Separates **UI state** (BLoC/Cubit) from **data access** (repositories/services).
+- Uses **Cloud Functions** for privileged / cross-document logic.
 
 ---
 
@@ -86,7 +110,7 @@ This section is intentionally "ready" but won't show broken images.
 
 ---
 
-## Architecture diagrams
+## Architecture
 
 ### System context
 
@@ -102,14 +126,28 @@ flowchart LR
   CF --> ST
 ```
 
+### Backend responsibilities (simplified)
+
+```mermaid
+flowchart LR
+  APP["Flutter App"] -->|"direct reads/writes (allowed by rules)"| DB["Firestore"]
+  APP -->|"uploads"| ST["Storage"]
+  APP -->|"calls"| CALL["Callable Functions"]
+  DB -->|"events"| TRIG["Firestore Triggers"]
+  TRIG --> SVC["Services\n(matching, messaging, notifications)"]
+  CALL --> SVC
+  SVC --> DB
+  SVC --> ST
+```
+
 ### Frontend layering
 
 ```mermaid
 flowchart TB
-  UI["Presentation: Screens & Widgets"] --> SM["State: BLoC / Cubit"]
-  SM --> S["Services / Repositories"]
-  S --> SDK[("Firebase SDK")]
-  S --> CORE["Core: errors, utils, theme, shared widgets"]
+  UI["Presentation\n(Screens & Widgets)"] --> SM["State\n(BLoC / Cubit)"]
+  SM --> S["Services\n(Repositories)"]
+  S --> SDK["Firebase SDK"]
+  S --> CORE["Core\n(errors, utils, theme, widgets)"]
 ```
 
 ### Domain model (simplified)
@@ -117,41 +155,43 @@ flowchart TB
 ```mermaid
 classDiagram
   class User {
-    +String id
-    +String role
+    id
+    role
   }
   class Trip {
-    +String id
-    +String travelerId
-    +String from
-    +String to
+    id
+    travelerId
+    from
+    to
   }
   class Request {
-    +String id
-    +String requesterId
-    +String status
+    id
+    requesterId
+    status
   }
   class Match {
-    +String id
-    +String tripId
-    +String requestId
-    +String status
+    id
+    tripId
+    requestId
+    status
   }
   class Chat {
-    +String id
+    id
   }
   class Message {
-    +String id
-    +String chatId
-    +String senderId
-    +String text
+    id
+    chatId
+    senderId
+    text
   }
 
-  User "1" --> "0..*" Trip : posts
-  User "1" --> "0..*" Request : creates
-  Trip "1" --> "0..*" Match
-  Request "1" --> "0..*" Match
-  Chat "1" --> "0..*" Message
+  User --> Trip : posts
+  User --> Request : creates
+  Trip --> Match
+  Request --> Match
+  Match --> Chat : negotiation
+  Chat --> Message
+  User --> Message : sends
 ```
 
 ### Example flow: request <-> trip coordination
@@ -170,6 +210,13 @@ sequenceDiagram
   T->>App: Message / offer
   App->>DB: Create chat + messages
 ```
+
+### Key engineering decisions
+
+- **Serverless-first backend:** Firestore + Cloud Functions keeps ops light while still enabling complex logic.
+- **Rules + functions split:** authorization enforced in rules; validations and privileged operations enforced in functions.
+- **Feature-first Flutter layout:** easier scaling as modules grow (auth/chat/trips/requests/etc.).
+- **Emulator-driven development:** encourages safe iteration without impacting production data.
 
 ---
 
@@ -258,6 +305,14 @@ Guiding principle: keep client access minimal via rules, and enforce privileged 
 
 ---
 
+## Deployment notes
+
+- **Flutter:** build release artifacts via `flutter build apk --release` (Android) / `flutter build ios --release` (iOS, macOS required).
+- **Firebase:** deploy rules + functions using Firebase CLI from the `firebase/` directory when configured.
+- **Environments:** prefer emulators for development; use separate Firebase projects for staging/production.
+
+---
+
 ## Repository layout
 
 ```text
@@ -288,14 +343,6 @@ Guiding principle: keep client access minimal via rules, and enforce privileged 
 - Deep links + improved onboarding
 - More robust matching and dispute handling
 - Observability (structured logging) for Cloud Functions
-
----
-
-## Repo structure
-
-- `frontend/` — Flutter application
-- `firebase/` — Firebase config, security rules, emulators, Cloud Functions
-- `docs/` — Requirements and architecture documentation
 
 ---
 
