@@ -5,22 +5,108 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isSelf(userId) {
-      return isSignedIn() && request.auth.uid == userId;
+    function uid() {
+      return request.auth.uid;
     }
 
-    // Development rules:
-    // - Allow any authenticated user to read/write all app data.
-    // - Restrict user profile documents to the owning user.
-    // Tighten these before production.
+    function isSelf(userId) {
+      return isSignedIn() && uid() == userId;
+    }
 
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function isParticipant(participants) {
+      return isSignedIn() && (participants is list) && participants.hasAny([uid()]);
+    }
+
+    // --------------------------------------------
+    // USERS
+    // --------------------------------------------
     match /users/{userId} {
       allow read: if isSignedIn();
-      allow create, update, delete: if isSelf(userId);
+      allow create: if isSelf(userId);
+      allow update: if isSelf(userId);
+      allow delete: if isAdmin();
     }
 
+    // --------------------------------------------
+    // TRIPS
+    // --------------------------------------------
+    match /trips/{tripId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.travelerId == uid();
+      allow update, delete: if isSignedIn() && resource.data.travelerId == uid();
+    }
+
+    // --------------------------------------------
+    // REQUESTS
+    // --------------------------------------------
+    match /requests/{requestId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.requesterId == uid();
+      allow update, delete: if isSignedIn() && resource.data.requesterId == uid();
+    }
+
+    // --------------------------------------------
+    // MATCHES + MESSAGES
+    // --------------------------------------------
+    match /matches/{matchId} {
+      allow read: if isParticipant(resource.data.participants);
+      // Matches should be created by trusted backend logic (Cloud Functions).
+      allow create: if false;
+
+      // Participants may update limited operational fields (status/pricing/read state).
+      allow update: if isParticipant(resource.data.participants)
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly([
+          'status',
+          'agreedPrice',
+          'updatedAt',
+          'confirmedAt',
+          'completedAt',
+          'lastMessage',
+          'lastMessageAt',
+          'lastMessageSenderId'
+        ]);
+
+      allow delete: if false;
+
+      match /messages/{messageId} {
+        allow read: if isParticipant(get(/databases/$(database)/documents/matches/$(matchId)).data.participants);
+        allow create: if isSignedIn()
+          && isParticipant(get(/databases/$(database)/documents/matches/$(matchId)).data.participants)
+          && request.resource.data.senderId == uid();
+        allow update, delete: if false;
+      }
+    }
+
+    // --------------------------------------------
+    // REVIEWS
+    // --------------------------------------------
+    match /reviews/{reviewId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.reviewerId == uid();
+      allow update, delete: if false;
+    }
+
+    // --------------------------------------------
+    // NOTIFICATIONS
+    // --------------------------------------------
+    match /notifications/{notificationId} {
+      allow read: if isSignedIn() && resource.data.userId == uid();
+      allow create: if false;
+      allow update: if isSignedIn()
+        && resource.data.userId == uid()
+        && request.resource.data.diff(resource.data).changedKeys().hasOnly(['read']);
+      allow delete: if false;
+    }
+
+    // --------------------------------------------
+    // DEFAULT DENY
+    // --------------------------------------------
     match /{document=**} {
-      allow read, write: if isSignedIn();
+      allow read, write: if false;
     }
   }
 }

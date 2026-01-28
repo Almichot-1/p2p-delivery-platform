@@ -27,9 +27,9 @@ class MatchRepository {
 
   // Create match
   Future<String> createMatch(MatchModel match) async {
-    final docRef =
-        await _firebaseService.matchesCollection.add(match.toFirestore());
-    return docRef.id;
+    throw UnsupportedError(
+      'Matches are created by backend matching logic; client-side creation is disabled.',
+    );
   }
 
   // Update match status

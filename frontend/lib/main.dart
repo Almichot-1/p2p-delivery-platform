@@ -1,8 +1,9 @@
 import 'dart:async';
-import 'dart:ui';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -38,6 +39,13 @@ void main() {
     defaultValue: '127.0.0.1',
   );
 
+  // Resolve emulator host automatically for Android emulator (10.0.2.2) unless overridden.
+  final resolvedEmulatorHost = firebaseEmulatorHost.isNotEmpty
+      ? firebaseEmulatorHost
+      : kIsWeb
+          ? 'localhost'
+          : (Platform.isAndroid ? '10.0.2.2' : '127.0.0.1');
+
   // Set preferred orientations
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -64,14 +72,14 @@ void main() {
       firebaseInitialized = true;
 
       if (useFirebaseEmulators) {
-        FirebaseAuth.instance.useAuthEmulator(firebaseEmulatorHost, 9099);
+        FirebaseAuth.instance.useAuthEmulator(resolvedEmulatorHost, 9099);
         FirebaseFirestore.instance.useFirestoreEmulator(  
-          firebaseEmulatorHost,
+          resolvedEmulatorHost,
           8080,
         );
-        FirebaseStorage.instance.useStorageEmulator(firebaseEmulatorHost, 9199);
+        FirebaseStorage.instance.useStorageEmulator(resolvedEmulatorHost, 9199);
         debugPrint(
-          'Using Firebase Emulators at $firebaseEmulatorHost '
+          'Using Firebase Emulators at $resolvedEmulatorHost '
           '(auth:9099, firestore:8080, storage:9199)',
         );
       }

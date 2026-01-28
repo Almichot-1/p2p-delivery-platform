@@ -13,7 +13,8 @@ class StorageService {
     if (userId == null) throw Exception('User not authenticated');
 
     final ext = path.extension(file.path);
-    final ref = _firebaseService.profileImagesRef.child('$userId$ext');
+    final uuid = const Uuid().v4();
+    final ref = _firebaseService.usersStorageRef.child('$userId/profile/$uuid$ext');
 
     await ref.putFile(file);
     return await ref.getDownloadURL();
@@ -25,7 +26,7 @@ class StorageService {
 
     final uuid = const Uuid().v4();
     final ext = path.extension(file.path);
-    final ref = _firebaseService.verificationDocsRef.child('$userId/$uuid$ext');
+    final ref = _firebaseService.usersStorageRef.child('$userId/verification/$uuid$ext');
 
     await ref.putFile(file);
     return await ref.getDownloadURL();
@@ -34,7 +35,7 @@ class StorageService {
   Future<String> uploadItemImage(File file, String requestId) async {
     final uuid = const Uuid().v4();
     final ext = path.extension(file.path);
-    final ref = _firebaseService.itemImagesRef.child('$requestId/$uuid$ext');
+    final ref = _firebaseService.requestsStorageRef.child('$requestId/images/$uuid$ext');
 
     await ref.putFile(file);
     return await ref.getDownloadURL();
@@ -55,7 +56,7 @@ class StorageService {
   Future<String> uploadChatImage(File file, String matchId) async {
     final uuid = const Uuid().v4();
     final ext = path.extension(file.path);
-    final ref = _firebaseService.chatImagesRef.child('$matchId/$uuid$ext');
+    final ref = _firebaseService.matchesStorageRef.child('$matchId/attachments/$uuid$ext');
 
     await ref.putFile(file);
     return await ref.getDownloadURL();

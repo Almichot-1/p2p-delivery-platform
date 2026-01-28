@@ -4,7 +4,7 @@
  */
 
 const functions = require("firebase-functions/v1");
-const { db, collections } = require("../config/firebase");
+const { db, FieldValue, collections } = require("../config/firebase");
 const notificationService = require("../services/notification.service");
 
 /**
@@ -46,11 +46,10 @@ exports.onMessageCreated = functions.firestore
       
       // Update match's last message info
       await db.collection(collections.MATCHES).doc(matchId).update({
-        lastMessage: {
-          content: message.content.substring(0, 100),
-          senderId: message.senderId,
-          timestamp: message.timestamp,
-        },
+        lastMessage: (message.content || "").substring(0, 100),
+        // Prefer Flutter schema field `createdAt`; fall back to legacy `timestamp`; else server time.
+        lastMessageAt: message.createdAt || message.timestamp || FieldValue.serverTimestamp(),
+        lastMessageSenderId: message.senderId,
       });
       
       return { success: true };

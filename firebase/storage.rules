@@ -10,6 +10,20 @@ service firebase.storage {
     function isOwner(userId) {
       return request.auth.uid == userId;
     }
+
+    function isAdmin() {
+      return request.auth.token.admin == true;
+    }
+
+    function isRequestOwner(requestId) {
+      return isAuthenticated()
+        && firestore.get(/databases/$(database)/documents/requests/$(requestId)).data.requesterId == request.auth.uid;
+    }
+
+    function isMatchParticipant(matchId) {
+      return isAuthenticated()
+        && firestore.get(/databases/$(database)/documents/matches/$(matchId)).data.participants.hasAny([request.auth.uid]);
+    }
     
     function isValidImage() {
       return request.resource.contentType.matches('image/.*')
@@ -38,7 +52,7 @@ service firebase.storage {
     // ============================================
     match /users/{userId}/verification/{fileName} {
       // Only owner and admins can read
-      allow read: if isOwner(userId);
+      allow read: if isOwner(userId) || isAdmin();
       
       // Only owner can upload
       allow write: if isOwner(userId) && isValidDocument();
@@ -52,10 +66,10 @@ service firebase.storage {
       allow read: if isAuthenticated();
       
       // Request owner can upload (validated in Cloud Function)
-      allow create: if isAuthenticated() && isValidImage();
+      allow create: if isRequestOwner(requestId) && isValidImage();
       
       // Only owner can delete
-      allow delete: if isAuthenticated();
+      allow delete: if isRequestOwner(requestId);
     }
     
     // ============================================
@@ -63,10 +77,10 @@ service firebase.storage {
     // ============================================
     match /matches/{matchId}/attachments/{fileName} {
       // Match participants can read (validated client-side)
-      allow read: if isAuthenticated();
+      allow read: if isMatchParticipant(matchId);
       
       // Authenticated users can upload
-      allow create: if isAuthenticated() && isValidImage();
+      allow create: if isMatchParticipant(matchId) && isValidImage();
       
       allow delete: if false; // Preserve chat history
     }

@@ -70,7 +70,9 @@ const calculateMatchScore = (trip, request) => {
   }
   
   // Weight capacity
-  if (trip.availableWeight >= request.weight) {
+  const tripCapacity = Number(trip.availableCapacityKg ?? trip.availableWeight ?? 0);
+  const requestWeight = Number(request.weightKg ?? request.weight ?? 0);
+  if (tripCapacity >= requestWeight) {
     score += 20;
   }
   

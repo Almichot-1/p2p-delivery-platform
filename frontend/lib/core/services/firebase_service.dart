@@ -43,13 +43,11 @@ class FirebaseService {
   // Storage References
   FirebaseStorage get storage => _storage;
   Reference get storageRoot => _storage.ref();
-  Reference get profileImagesRef => _storage.ref().child('profile_images');
-  Reference get tripImagesRef => _storage.ref().child('trip_images');
-  Reference get chatImagesRef => _storage.ref().child('chat_images');
-  Reference get idDocumentsRef => _storage.ref().child('id_documents');
-  Reference get verificationDocsRef =>
-      _storage.ref().child('verification_docs');
-  Reference get itemImagesRef => _storage.ref().child('item_images');
+
+  // Storage roots aligned to backend storage rules
+  Reference get usersStorageRef => _storage.ref().child('users');
+  Reference get requestsStorageRef => _storage.ref().child('requests');
+  Reference get matchesStorageRef => _storage.ref().child('matches');
 
   // Helper methods
   String getTimestamp() {

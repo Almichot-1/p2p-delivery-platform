@@ -36,7 +36,9 @@ class MatchingService {
         if (tripCity !== requestCity) continue;
         
         // Check weight capacity
-        if (trip.availableWeight < request.weight) continue;
+        const tripCapacity = Number(trip.availableCapacityKg ?? trip.availableWeight ?? 0);
+        const requestWeight = Number(request.weightKg ?? request.weight ?? 0);
+        if (tripCapacity < requestWeight) continue;
         
         // Check date validity (trip should be in future)
         if (trip.departureDate.toDate() < new Date()) continue;
@@ -86,7 +88,9 @@ class MatchingService {
         if (tripCity !== requestCity) continue;
         
         // Check weight capacity
-        if (trip.availableWeight < request.weight) continue;
+        const tripCapacity = Number(trip.availableCapacityKg ?? trip.availableWeight ?? 0);
+        const requestWeight = Number(request.weightKg ?? request.weight ?? 0);
+        if (tripCapacity < requestWeight) continue;
         
         // Calculate match score
         const score = calculateMatchScore(trip, request);
@@ -122,6 +126,19 @@ class MatchingService {
         console.log("Match already exists");
         return null;
       }
+
+      // Prefer denormalized display fields from trip/request docs (written by the client)
+      const travelerName = trip.travelerName || "";
+      const travelerPhoto = trip.travelerPhoto || null;
+      const travelerRating = Number(trip.travelerRating ?? 0);
+      const requesterName = request.requesterName || "";
+      const requesterPhoto = request.requesterPhoto || null;
+      const requesterRating = Number(request.requesterRating ?? 0);
+
+      const tripDate = trip.departureDate; // Firestore Timestamp
+      const itemTitle = request.title || "";
+      const route = `${trip.originCity || ""} → ${trip.destinationCity || ""}`.trim();
+      const agreedPrice = Number(request.offeredPrice ?? 0);
       
       // Create match document
       const match = {
@@ -131,16 +148,19 @@ class MatchingService {
         requesterId: request.requesterId,
         participants: [trip.travelerId, request.requesterId],
         status: MATCH_STATUS.PENDING,
-        tripDetails: {
-          originCity: trip.originCity,
-          destinationCity: trip.destinationCity,
-          departureDate: trip.departureDate,
-        },
-        requestDetails: {
-          title: request.title,
-          weight: request.weight,
-          deliveryCity: request.deliveryCity,
-        },
+        travelerName,
+        travelerPhoto,
+        travelerRating,
+        requesterName,
+        requesterPhoto,
+        requesterRating,
+        itemTitle,
+        route,
+        tripDate,
+        agreedPrice,
+        lastMessage: null,
+        lastMessageAt: null,
+        lastMessageSenderId: null,
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),
       };
@@ -301,8 +321,16 @@ class MatchingService {
       throw new Error("User not a participant in this match");
     }
     
-    if (match.status !== MATCH_STATUS.ACCEPTED) {
-      throw new Error("Match must be accepted before completing");
+    const completableStatuses = [
+      MATCH_STATUS.ACCEPTED,
+      MATCH_STATUS.CONFIRMED,
+      MATCH_STATUS.PICKED_UP,
+      MATCH_STATUS.IN_TRANSIT,
+      MATCH_STATUS.DELIVERED,
+    ];
+
+    if (!completableStatuses.includes(match.status)) {
+      throw new Error("Match must be in an active state before completing");
     }
     
     // Update match
@@ -315,7 +343,8 @@ class MatchingService {
     
     // Update request status
     await db.collection(collections.REQUESTS).doc(match.requestId).update({
-      status: REQUEST_STATUS.DELIVERED,
+      // Keep in sync with the Flutter client model (RequestStatus.completed)
+      status: "completed",
       updatedAt: FieldValue.serverTimestamp(),
     });
     

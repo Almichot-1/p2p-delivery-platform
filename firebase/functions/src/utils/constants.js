@@ -21,7 +21,12 @@ const REQUEST_STATUS = {
 const MATCH_STATUS = {
   PENDING: "pending",
   ACCEPTED: "accepted",
+  CONFIRMED: "confirmed",
+  PICKED_UP: "picked_up",
+  IN_TRANSIT: "in_transit",
+  DELIVERED: "delivered",
   REJECTED: "rejected",
+  EXPIRED: "expired",
   COMPLETED: "completed",
   CANCELLED: "cancelled",
 };

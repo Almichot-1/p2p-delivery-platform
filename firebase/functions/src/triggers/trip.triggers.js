@@ -71,7 +71,7 @@ exports.onTripUpdated = functions.firestore
       }
       
       // If capacity increased, check for new matches
-      if (after.availableWeight > before.availableWeight && after.status === "active") {
+      if ((after.availableCapacityKg ?? 0) > (before.availableCapacityKg ?? 0) && after.status === "active") {
         const matchCount = await matchingService.processNewTrip(tripId, after);
         console.log(`Created ${matchCount} new matches after capacity increase`);
       }

@@ -15,7 +15,7 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
   try {
     const auth = validateAuth(context);
     
-    const { matchId, content, attachmentUrl } = data;
+    const { matchId, content, attachmentUrl, imageUrl } = data;
     
     if (!matchId) {
       throwError(ERROR_CODES.INVALID_ARGUMENT, "Match ID is required");
@@ -23,7 +23,9 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
     
     // Validate message
     const validation = validationService.validateMessage(content);
-    if (!validation.isValid && !attachmentUrl) {
+    const effectiveImageUrl = imageUrl || attachmentUrl || null;
+
+    if (!validation.isValid && !effectiveImageUrl) {
       throwError(ERROR_CODES.INVALID_ARGUMENT, validation.errors.join(", "));
     }
     
@@ -40,16 +42,41 @@ exports.sendMessage = functions.https.onCall(async (data, context) => {
       throwError(ERROR_CODES.PERMISSION_DENIED, "You are not a participant in this chat");
     }
     
-    // Only allow chat for accepted matches
-    if (match.status !== MATCH_STATUS.ACCEPTED && match.status !== MATCH_STATUS.COMPLETED) {
+    // Only allow chat for active/accepted lifecycle states
+    const chatAllowedStatuses = [
+      MATCH_STATUS.ACCEPTED,
+      MATCH_STATUS.CONFIRMED,
+      MATCH_STATUS.PICKED_UP,
+      MATCH_STATUS.IN_TRANSIT,
+      MATCH_STATUS.DELIVERED,
+      MATCH_STATUS.COMPLETED,
+    ];
+
+    if (!chatAllowedStatuses.includes(match.status)) {
       throwError(ERROR_CODES.PERMISSION_DENIED, "Chat is only available for accepted matches");
     }
     
-    // Create message
+    // Resolve sender display name (best-effort)
+    let senderName = "";
+    try {
+      const userDoc = await db.collection(collections.USERS).doc(auth.uid).get();
+      if (userDoc.exists) {
+        senderName = userDoc.data().displayName || userDoc.data().fullName || "";
+      }
+    } catch (_) {
+      // Non-fatal
+    }
+
+    // Create message (Flutter schema)
     const message = {
+      matchId,
       senderId: auth.uid,
-      content: content || "",
-      attachmentUrl: attachmentUrl || null,
+      senderName,
+      content: content || (effectiveImageUrl ? "📷 Image" : ""),
+      type: effectiveImageUrl ? "image" : "text",
+      imageUrl: effectiveImageUrl,
+      createdAt: FieldValue.serverTimestamp(),
+      // Legacy alias used by older codepaths.
       timestamp: FieldValue.serverTimestamp(),
       isRead: false,
     };
@@ -97,7 +124,7 @@ exports.getMessages = functions.https.onCall(async (data, context) => {
       .collection(collections.MATCHES)
       .doc(matchId)
       .collection("messages")
-      .orderBy("timestamp", "desc");
+      .orderBy("createdAt", "desc");
     
     if (beforeMessageId) {
       const beforeDoc = await db
